@@ -25,6 +25,19 @@ function POS() {
   ]);
   const [paying, setPaying] = useState<null | "mpesa" | "cash" | "split" | "done">(null);
   const [activeCat, setActiveCat] = useState("All");
+  const [scanOpen, setScanOpen] = useState(false);
+
+  const handleScanned = (code: string) => {
+    setScanOpen(false);
+    const match = products.find(p => p.sku === code || p.id === code || p.name.toLowerCase().includes(code.toLowerCase()));
+    if (match) {
+      addToCart(match);
+      toast.success(`Added ${match.name}`, { description: `Code: ${code}` });
+    } else {
+      setQuery(code);
+      toast.warning("Product not found", { description: `Scanned ${code}. Search shown.` });
+    }
+  };
 
   const cats = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
   const filtered = useMemo(() => products.filter(p =>
