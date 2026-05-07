@@ -174,6 +174,7 @@ function POS() {
           </Card>
         </div>
       )}
+      <BarcodeScanner open={scanOpen} onClose={() => setScanOpen(false)} onDetected={handleScanned} />
     </div>
   );
 }
