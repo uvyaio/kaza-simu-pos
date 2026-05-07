@@ -64,7 +64,7 @@ function POS() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products or scan SKU..." className="pl-10 h-12 text-base" />
           </div>
-          <Button size="lg" variant="outline" className="h-12 w-12 p-0"><ScanLine className="h-5 w-5" /></Button>
+          <Button size="lg" variant="outline" className="h-12 w-12 p-0" onClick={() => setScanOpen(true)} title="Scan barcode"><ScanLine className="h-5 w-5" /></Button>
         </div>
 
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
