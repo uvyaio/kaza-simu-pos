@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { products, KES, type Product } from "@/lib/mock-data";
 import { Search, ScanLine, Plus, Minus, Trash2, Smartphone, Banknote, Split, CheckCircle2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/pos")({
   head: () => ({ meta: [{ title: "POS Checkout — KaliPOS" }, { name: "description", content: "Fast, mobile-first checkout with M-Pesa." }] }),
