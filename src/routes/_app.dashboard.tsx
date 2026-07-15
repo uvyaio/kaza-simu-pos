@@ -122,8 +122,8 @@ function Dashboard() {
         <Card className="lg:col-span-2 p-5 shadow-soft">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h3 className="font-semibold">Top selling products</h3>
-              <p className="text-xs text-muted-foreground">By units sold today</p>
+              <h3 className="font-semibold">Top selling dishes</h3>
+              <p className="text-xs text-muted-foreground">By plates served today</p>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
