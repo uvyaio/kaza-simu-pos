@@ -19,8 +19,8 @@ function Dashboard() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto">
       <PageHeader
-        title="Habari, Joseph 👋"
-        subtitle="Here's what's happening at Westlands Mart today."
+        title="Habari, Kato 👋"
+        subtitle="Here's what's cooking at Kato's Kitchen today."
         action={
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="gap-1.5 py-1 px-2.5"><span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-dot" />Live</Badge>
