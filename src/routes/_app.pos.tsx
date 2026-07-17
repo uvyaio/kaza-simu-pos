@@ -4,46 +4,54 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { products, KES, type Product } from "@/lib/mock-data";
-import { Search, ScanLine, Plus, Minus, Trash2, Smartphone, Banknote, Split, CheckCircle2, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { products as seedProducts, KES, DAYS, type Product, type Day } from "@/lib/mock-data";
+import { Search, ScanLine, Plus, Minus, Trash2, Smartphone, Banknote, Split, CheckCircle2, X, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/pos")({
-  head: () => ({ meta: [{ title: "POS Checkout — KaliPOS" }, { name: "description", content: "Fast, mobile-first checkout with M-Pesa." }] }),
+  head: () => ({ meta: [{ title: "Menu & POS — Kato's Kitchen" }, { name: "description", content: "Kato's Kitchen menu, day-of-week planner and fast M-Pesa checkout." }] }),
   component: POS,
 });
 
 type CartItem = Product & { qty: number };
 
+const todayDay = (): Day => DAYS[(new Date().getDay() + 6) % 7]; // Mon-first
+
 function POS() {
+  const [menu, setMenu] = useState<Product[]>(seedProducts);
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([
-    { ...products[1], qty: 2 },
-    { ...products[9], qty: 1 },
+    { ...seedProducts[0], qty: 1 },
+    { ...seedProducts[8], qty: 2 },
   ]);
   const [paying, setPaying] = useState<null | "mpesa" | "cash" | "split" | "done">(null);
   const [activeCat, setActiveCat] = useState("All");
+  const [activeDay, setActiveDay] = useState<Day>(todayDay());
   const [scanOpen, setScanOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   const handleScanned = (code: string) => {
     setScanOpen(false);
-    const match = products.find(p => p.sku === code || p.id === code || p.name.toLowerCase().includes(code.toLowerCase()));
+    const match = menu.find(p => p.sku === code || p.id === code || p.name.toLowerCase().includes(code.toLowerCase()));
     if (match) {
       addToCart(match);
       toast.success(`Added ${match.name}`, { description: `Code: ${code}` });
     } else {
       setQuery(code);
-      toast.warning("Product not found", { description: `Scanned ${code}. Search shown.` });
+      toast.warning("Dish not found", { description: `Scanned ${code}. Search shown.` });
     }
   };
 
-  const cats = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
-  const filtered = useMemo(() => products.filter(p =>
+  const cats = ["All", ...Array.from(new Set(menu.map((p) => p.category)))];
+  const filtered = useMemo(() => menu.filter(p =>
+    p.days.includes(activeDay) &&
     (activeCat === "All" || p.category === activeCat) &&
     (p.name.toLowerCase().includes(query.toLowerCase()) || p.sku.toLowerCase().includes(query.toLowerCase()))
-  ), [query, activeCat]);
+  ), [menu, query, activeCat, activeDay]);
 
   const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const tax = Math.round(subtotal * 0.16);
@@ -56,15 +64,37 @@ function POS() {
   const setQty = (id: string, d: number) => setCart(c => c.flatMap(x => x.id === id ? (x.qty + d <= 0 ? [] : [{ ...x, qty: x.qty + d }]) : [x]));
   const remove = (id: string) => setCart(c => c.filter(x => x.id !== id));
 
+  const handleAddDish = (dish: Product) => {
+    setMenu(m => [...m, dish]);
+    toast.success(`Added "${dish.name}" to the menu`);
+    setAddOpen(false);
+  };
+
   return (
     <div className="grid lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_440px] h-[calc(100vh-3.5rem)]">
       <div className="overflow-auto p-4 lg:p-6 border-r">
         <div className="flex items-center gap-2 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search menu or scan order code..." className="pl-10 h-12 text-base" />
+            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search dishes on today's menu..." className="pl-10 h-12 text-base" />
           </div>
-          <Button size="lg" variant="outline" className="h-12 w-12 p-0" onClick={() => setScanOpen(true)} title="Scan barcode"><ScanLine className="h-5 w-5" /></Button>
+          <Button size="lg" variant="outline" className="h-12 w-12 p-0" onClick={() => setScanOpen(true)} title="Scan code"><ScanLine className="h-5 w-5" /></Button>
+          <Button size="lg" className="h-12 gap-1.5 gradient-primary border-0" onClick={() => setAddOpen(true)}>
+            <PlusCircle className="h-4 w-4" /> <span className="hidden sm:inline">Add dish</span>
+          </Button>
+        </div>
+
+        {/* Day-of-week planner */}
+        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1 shrink-0">Menu day</span>
+          {DAYS.map(d => (
+            <button key={d} onClick={() => setActiveDay(d)}
+              className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors border",
+                activeDay === d ? "bg-primary text-primary-foreground border-primary shadow-soft" : "bg-card hover:bg-muted",
+                d === todayDay() && activeDay !== d && "border-primary/40 text-primary")}>
+              {d}{d === todayDay() && <span className="ml-1 opacity-70">•</span>}
+            </button>
+          ))}
         </div>
 
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
@@ -77,35 +107,49 @@ function POS() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {filtered.map(p => (
-            <button key={p.id} onClick={() => addToCart(p)}
-              className="text-left rounded-2xl border bg-card p-4 hover:border-primary hover:shadow-elevated transition-all active:scale-[0.98]">
-              <div className="text-3xl mb-2">{p.emoji}</div>
-              <div className="text-sm font-medium leading-tight line-clamp-2">{p.name}</div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-base font-bold text-primary">{KES(p.price)}</span>
-                <Badge variant="secondary" className={cn("text-[10px]", p.stock <= p.reorder && "bg-warning/20 text-warning-foreground")}>
-                  {p.stock} {p.unit}
-                </Badge>
-              </div>
-            </button>
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed p-10 text-center text-sm text-muted-foreground">
+            No dishes on the {activeDay} menu yet. Tap <span className="font-semibold text-foreground">Add dish</span> to create one.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {filtered.map(p => (
+              <button key={p.id} onClick={() => addToCart(p)}
+                className="text-left rounded-2xl border bg-card p-4 hover:border-primary hover:shadow-elevated transition-all active:scale-[0.98]">
+                <div className="text-3xl mb-2">{p.emoji}</div>
+                <div className="text-sm font-semibold leading-tight line-clamp-2">{p.name}</div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">{p.category}</div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-base font-bold text-primary">{KES(p.price)}</span>
+                  <Badge variant="secondary" className={cn("text-[10px]", p.stock <= p.reorder && "bg-warning/20 text-warning-foreground")}>
+                    {p.stock} {p.unit}
+                  </Badge>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {p.days.length === 7 ? (
+                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Everyday</span>
+                  ) : p.days.map(d => (
+                    <span key={d} className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{d}</span>
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col bg-card max-h-[calc(100vh-3.5rem)]">
         <div className="p-5 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-lg">Current sale</h2>
-            <Badge variant="outline" className="gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-success" />Receipt #1842</Badge>
+            <h2 className="font-semibold text-lg">Current order</h2>
+            <Badge variant="outline" className="gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-success" />Ticket #1842</Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Cashier: Mercy A. · Westlands</p>
+          <p className="text-xs text-muted-foreground mt-1">Waiter: Mercy A. · Kato's Kitchen</p>
         </div>
 
         <div className="flex-1 overflow-auto p-3 space-y-2">
           {cart.length === 0 && (
-            <div className="text-center py-12 text-sm text-muted-foreground">Cart is empty. Tap a product to add.</div>
+            <div className="text-center py-12 text-sm text-muted-foreground">No dishes yet. Tap a card to add.</div>
           )}
           {cart.map(item => (
             <div key={item.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/40">
@@ -175,6 +219,114 @@ function POS() {
         </div>
       )}
       <BarcodeScanner open={scanOpen} onClose={() => setScanOpen(false)} onDetected={handleScanned} />
+      <AddDishDialog open={addOpen} onOpenChange={setAddOpen} onAdd={handleAddDish} defaultDay={activeDay} existingCats={cats.filter(c => c !== "All")} />
     </div>
+  );
+}
+
+function AddDishDialog({
+  open, onOpenChange, onAdd, defaultDay, existingCats,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onAdd: (dish: Product) => void;
+  defaultDay: Day;
+  existingCats: string[];
+}) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState(existingCats[0] ?? "Mains");
+  const [price, setPrice] = useState<number | "">("");
+  const [cost, setCost] = useState<number | "">("");
+  const [emoji, setEmoji] = useState("🍽️");
+  const [days, setDays] = useState<Day[]>([defaultDay]);
+
+  const toggleDay = (d: Day) =>
+    setDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
+
+  const reset = () => {
+    setName(""); setPrice(""); setCost(""); setEmoji("🍽️"); setDays([defaultDay]);
+  };
+
+  const submit = () => {
+    if (!name.trim() || price === "" || days.length === 0) {
+      toast.error("Add a name, price and at least one day");
+      return;
+    }
+    const id = `m-${Date.now()}`;
+    onAdd({
+      id,
+      name: name.trim(),
+      sku: `MENU-${id.slice(-4).toUpperCase()}`,
+      category,
+      price: Number(price),
+      cost: Number(cost || 0),
+      stock: 20,
+      reorder: 5,
+      unit: "plate",
+      emoji: emoji || "🍽️",
+      supplier: "Kitchen",
+      days,
+    });
+    reset();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add a new dish</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="grid grid-cols-[80px_1fr] gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Emoji</Label>
+              <Input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={2} className="text-2xl h-11 text-center" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Dish name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Mukimo" className="h-11" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Price (KES)</Label>
+              <Input type="number" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} placeholder="450" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Food cost</Label>
+              <Input type="number" value={cost} onChange={(e) => setCost(e.target.value === "" ? "" : Number(e.target.value))} placeholder="180" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Category</Label>
+              <select value={category} onChange={(e) => setCategory(e.target.value)}
+                className="h-9 w-full rounded-md border bg-background px-2 text-sm">
+                {existingCats.map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="Specials">Specials</option>
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Available on</Label>
+            <div className="flex flex-wrap gap-1.5">
+              {DAYS.map(d => (
+                <button key={d} type="button" onClick={() => toggleDay(d)}
+                  className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors",
+                    days.includes(d) ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted")}>
+                  {d}
+                </button>
+              ))}
+              <button type="button" onClick={() => setDays([...DAYS])}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold border bg-muted hover:bg-muted/80">
+                Everyday
+              </button>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button className="gradient-primary border-0" onClick={submit}>Add dish</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
