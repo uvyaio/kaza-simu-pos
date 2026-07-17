@@ -23,9 +23,9 @@ function Settings() {
           <div><h3 className="font-semibold">Shop details</h3><p className="text-xs text-muted-foreground">Visible on receipts</p></div>
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
-          <div className="space-y-1.5"><Label>Shop name</Label><Input defaultValue="Westlands Mart" /></div>
+          <div className="space-y-1.5"><Label>Restaurant name</Label><Input defaultValue="Kato's Kitchen" /></div>
           <div className="space-y-1.5"><Label>KRA PIN</Label><Input defaultValue="P051234567X" /></div>
-          <div className="space-y-1.5 sm:col-span-2"><Label>Address</Label><Input defaultValue="Waiyaki Way, Westlands, Nairobi" /></div>
+          <div className="space-y-1.5 sm:col-span-2"><Label>Address</Label><Input defaultValue="Ngong Road, Nairobi" /></div>
         </div>
       </Card>
 

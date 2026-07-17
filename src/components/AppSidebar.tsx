@@ -39,8 +39,8 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="font-display text-base font-bold tracking-tight">KaliPOS</span>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Westlands Mart</span>
+              <span className="font-display text-base font-bold tracking-tight">Kato's Kitchen</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Powered by KaliPOS</span>
             </div>
           )}
         </Link>

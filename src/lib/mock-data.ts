@@ -1,6 +1,9 @@
 export const KES = (n: number) =>
   new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 0 }).format(n);
 
+export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+export type Day = typeof DAYS[number];
+
 export type Product = {
   id: string;
   name: string;
@@ -14,22 +17,39 @@ export type Product = {
   emoji: string;
   expiry?: string;
   supplier: string;
+  days: Day[];
 };
 
-// Menu items sold at the restaurant (used by POS as the tappable menu)
+const ALL_DAYS: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Menu items sold at Kato's Kitchen (used by POS as the tappable menu)
 export const products: Product[] = [
-  { id: "m1", name: "Nyama Choma (½ kg)", sku: "MEAT-NYA", category: "Mains", price: 850, cost: 480, stock: 40, reorder: 10, unit: "plate", emoji: "🥩", supplier: "Kitchen" },
-  { id: "m2", name: "Ugali & Sukuma", sku: "MEAL-UGS", category: "Mains", price: 250, cost: 90, stock: 60, reorder: 15, unit: "plate", emoji: "🍽️", supplier: "Kitchen" },
-  { id: "m3", name: "Pilau ya Kuku", sku: "MEAL-PIL", category: "Mains", price: 450, cost: 200, stock: 35, reorder: 10, unit: "plate", emoji: "🍛", supplier: "Kitchen" },
-  { id: "m4", name: "Samaki wa Kupaka", sku: "FISH-KUP", category: "Mains", price: 780, cost: 420, stock: 22, reorder: 8, unit: "plate", emoji: "🐟", supplier: "Kitchen" },
-  { id: "m5", name: "Chapati (2 pcs)", sku: "SIDE-CHA", category: "Sides", price: 80, cost: 25, stock: 120, reorder: 30, unit: "order", emoji: "🫓", supplier: "Kitchen" },
-  { id: "m6", name: "Chips (Fries)", sku: "SIDE-CHP", category: "Sides", price: 200, cost: 70, stock: 80, reorder: 20, unit: "plate", emoji: "🍟", supplier: "Kitchen" },
-  { id: "m7", name: "Kachumbari", sku: "SIDE-KAC", category: "Sides", price: 100, cost: 40, stock: 50, reorder: 15, unit: "bowl", emoji: "🥗", supplier: "Kitchen" },
-  { id: "m8", name: "Mandazi (3 pcs)", sku: "SNK-MAN", category: "Snacks", price: 60, cost: 20, stock: 90, reorder: 25, unit: "order", emoji: "🍩", supplier: "Kitchen" },
-  { id: "m9", name: "Samosa (Beef)", sku: "SNK-SAM", category: "Snacks", price: 50, cost: 18, stock: 70, reorder: 20, unit: "pc", emoji: "🥟", supplier: "Kitchen" },
-  { id: "m10", name: "Chai ya Maziwa", sku: "DRK-CHA", category: "Drinks", price: 80, cost: 25, stock: 100, reorder: 20, unit: "cup", emoji: "🍵", supplier: "Kitchen" },
-  { id: "m11", name: "Fresh Passion Juice", sku: "DRK-PAS", category: "Drinks", price: 180, cost: 70, stock: 40, reorder: 12, unit: "glass", emoji: "🧃", supplier: "Kitchen" },
-  { id: "m12", name: "Coca-Cola 500ml", sku: "DRK-COK", category: "Drinks", price: 120, cost: 70, stock: 60, reorder: 20, unit: "btl", emoji: "🥤", supplier: "Coca-Cola Beverages" },
+  { id: "m1",  name: "Nyama Choma (½ kg)",   sku: "MAIN-NYA", category: "Mains",   price: 850, cost: 480, stock: 40, reorder: 10, unit: "plate", emoji: "🥩", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "m2",  name: "Beef Wet Fry",         sku: "MAIN-WET", category: "Mains",   price: 480, cost: 220, stock: 30, reorder: 10, unit: "plate", emoji: "🍲", supplier: "Kitchen", days: ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+  { id: "m3",  name: "Osuboko (Fried Beef)", sku: "MAIN-OSU", category: "Mains",   price: 520, cost: 250, stock: 25, reorder: 8,  unit: "plate", emoji: "🍖", supplier: "Kitchen", days: ["Tue", "Thu", "Sat"] },
+  { id: "m4",  name: "Matumbo Fry",          sku: "MAIN-MAT", category: "Mains",   price: 380, cost: 160, stock: 20, reorder: 8,  unit: "plate", emoji: "🥘", supplier: "Kitchen", days: ["Mon", "Wed", "Fri"] },
+  { id: "m5",  name: "Kuku Kienyeji Stew",   sku: "MAIN-KUK", category: "Mains",   price: 650, cost: 320, stock: 18, reorder: 6,  unit: "plate", emoji: "🍗", supplier: "Kitchen", days: ["Wed", "Fri", "Sat", "Sun"] },
+  { id: "m6",  name: "Pilau ya Kuku",        sku: "MAIN-PIL", category: "Mains",   price: 450, cost: 200, stock: 35, reorder: 10, unit: "plate", emoji: "🍛", supplier: "Kitchen", days: ["Thu", "Fri", "Sat", "Sun"] },
+  { id: "m7",  name: "Samaki wa Kupaka",     sku: "MAIN-SAM", category: "Mains",   price: 780, cost: 420, stock: 22, reorder: 8,  unit: "plate", emoji: "🐟", supplier: "Kitchen", days: ["Fri", "Sat", "Sun"] },
+  { id: "m8",  name: "Mbuzi Choma (¼ kg)",   sku: "MAIN-MBZ", category: "Mains",   price: 620, cost: 340, stock: 20, reorder: 6,  unit: "plate", emoji: "🍢", supplier: "Kitchen", days: ["Sat", "Sun"] },
+
+  { id: "s1",  name: "Brown Ugali",          sku: "SIDE-BUG", category: "Sides",   price: 100, cost: 30, stock: 80, reorder: 20, unit: "plate", emoji: "🟤", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s2",  name: "White Ugali",          sku: "SIDE-WUG", category: "Sides",   price: 80,  cost: 25, stock: 100,reorder: 25, unit: "plate", emoji: "⬜", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s3",  name: "Sukuma Wiki",          sku: "SIDE-SUK", category: "Sides",   price: 80,  cost: 25, stock: 90, reorder: 25, unit: "plate", emoji: "🥬", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s4",  name: "Cabbage Fry",          sku: "SIDE-CAB", category: "Sides",   price: 80,  cost: 25, stock: 70, reorder: 20, unit: "plate", emoji: "🥗", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s5",  name: "Chapati (2 pcs)",      sku: "SIDE-CHA", category: "Sides",   price: 80,  cost: 25, stock: 120,reorder: 30, unit: "order", emoji: "🫓", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s6",  name: "Chips (Fries)",        sku: "SIDE-CHP", category: "Sides",   price: 200, cost: 70, stock: 80, reorder: 20, unit: "plate", emoji: "🍟", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s7",  name: "Kachumbari",           sku: "SIDE-KAC", category: "Sides",   price: 100, cost: 40, stock: 50, reorder: 15, unit: "bowl",  emoji: "🍅", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "s8",  name: "Rice (Plain)",         sku: "SIDE-RIC", category: "Sides",   price: 150, cost: 55, stock: 60, reorder: 15, unit: "plate", emoji: "🍚", supplier: "Kitchen", days: ALL_DAYS },
+
+  { id: "n1",  name: "Mandazi (3 pcs)",      sku: "SNK-MAN", category: "Snacks",  price: 60, cost: 20, stock: 90, reorder: 25, unit: "order", emoji: "🍩", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "n2",  name: "Samosa (Beef)",        sku: "SNK-SAM", category: "Snacks",  price: 50, cost: 18, stock: 70, reorder: 20, unit: "pc",    emoji: "🥟", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "n3",  name: "Boiled Eggs",          sku: "SNK-EGG", category: "Snacks",  price: 40, cost: 15, stock: 50, reorder: 15, unit: "pc",    emoji: "🥚", supplier: "Kitchen", days: ALL_DAYS },
+
+  { id: "d1",  name: "Chai ya Maziwa",       sku: "DRK-CHA", category: "Drinks",  price: 80,  cost: 25, stock: 100,reorder: 20, unit: "cup",   emoji: "🍵", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "d2",  name: "Fresh Passion Juice",  sku: "DRK-PAS", category: "Drinks",  price: 180, cost: 70, stock: 40, reorder: 12, unit: "glass", emoji: "🧃", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "d3",  name: "Dawa (Lemon Honey)",   sku: "DRK-DAW", category: "Drinks",  price: 150, cost: 55, stock: 35, reorder: 10, unit: "cup",   emoji: "🍯", supplier: "Kitchen", days: ALL_DAYS },
+  { id: "d4",  name: "Coca-Cola 500ml",      sku: "DRK-COK", category: "Drinks",  price: 120, cost: 70, stock: 60, reorder: 20, unit: "btl",   emoji: "🥤", supplier: "Coca-Cola Beverages", days: ALL_DAYS },
 ];
 
 // Raw ingredients / supplies purchased for the kitchen
@@ -87,7 +107,7 @@ export const paymentSplit = [
 
 export const topProducts = [
   { name: "Nyama Choma", units: 84, revenue: 71400 },
-  { name: "Ugali & Sukuma", units: 132, revenue: 33000 },
+  { name: "Brown Ugali", units: 132, revenue: 13200 },
   { name: "Pilau ya Kuku", units: 76, revenue: 34200 },
   { name: "Chapati", units: 210, revenue: 16800 },
   { name: "Chai ya Maziwa", units: 168, revenue: 13440 },
@@ -109,16 +129,14 @@ export const customers = [
 ];
 
 export const staff = [
-  { id: "s1", name: "Mercy Akinyi", role: "Waitress", branch: "Westlands", status: "active", sales: 124000 },
-  { id: "s2", name: "Daniel Kiprop", role: "Manager", branch: "Westlands", status: "active", sales: 0 },
-  { id: "s3", name: "Chef Kamau", role: "Head Chef", branch: "Westlands", status: "active", sales: 0 },
-  { id: "s4", name: "Grace Wairimu", role: "Waitress", branch: "Eastleigh", status: "active", sales: 98500 },
-  { id: "s5", name: "Samuel Mwangi", role: "Kitchen Assistant", branch: "Westlands", status: "off", sales: 0 },
-  { id: "s6", name: "Linet Achieng", role: "Cashier", branch: "Thika Road", status: "active", sales: 87200 },
+  { id: "s1", name: "Mercy Akinyi", role: "Waitress", branch: "Kato's Kitchen", status: "active", sales: 124000 },
+  { id: "s2", name: "Daniel Kiprop", role: "Manager", branch: "Kato's Kitchen", status: "active", sales: 0 },
+  { id: "s3", name: "Chef Kamau", role: "Head Chef", branch: "Kato's Kitchen", status: "active", sales: 0 },
+  { id: "s4", name: "Grace Wairimu", role: "Waitress", branch: "Kato's Kitchen", status: "active", sales: 98500 },
+  { id: "s5", name: "Samuel Mwangi", role: "Kitchen Assistant", branch: "Kato's Kitchen", status: "off", sales: 0 },
+  { id: "s6", name: "Linet Achieng", role: "Cashier", branch: "Kato's Kitchen", status: "active", sales: 87200 },
 ];
 
 export const branches = [
-  { id: "b1", name: "Westlands Kitchen", sales: 184500, growth: 12 },
-  { id: "b2", name: "Eastleigh Grill", sales: 96800, growth: -4 },
-  { id: "b3", name: "Thika Road Bistro", sales: 142300, growth: 8 },
+  { id: "b1", name: "Kato's Kitchen", sales: 423600, growth: 12 },
 ];
