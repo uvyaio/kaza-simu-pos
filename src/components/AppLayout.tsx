@@ -44,9 +44,9 @@ export function AppLayout() {
                 <Bell className="h-4 w-4" />
                 <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive" />
               </Button>
-              <div className="h-8 w-8 rounded-full gradient-primary grid place-items-center text-primary-foreground text-xs font-semibold ml-1">
-                JK
-              </div>
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={signOut} title="Sign out">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto animate-slide-up">
