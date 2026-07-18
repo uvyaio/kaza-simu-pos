@@ -1,13 +1,23 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell, Search, Sun, Moon } from "lucide-react";
+import { Bell, Search, Sun, Moon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppLayout() {
   const [dark, setDark] = useState(false);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);

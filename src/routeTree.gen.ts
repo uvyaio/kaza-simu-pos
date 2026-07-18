@@ -9,20 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteImport } from './routes/_app'
+import { Route as StaffLoginRouteImport } from './routes/staff-login'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppStaffRouteImport } from './routes/_app.staff'
-import { Route as AppSettingsRouteImport } from './routes/_app.settings'
-import { Route as AppReportsRouteImport } from './routes/_app.reports'
-import { Route as AppPosRouteImport } from './routes/_app.pos'
-import { Route as AppOwnerRouteImport } from './routes/_app.owner'
-import { Route as AppInventoryRouteImport } from './routes/_app.inventory'
-import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
-import { Route as AppCustomersRouteImport } from './routes/_app.customers'
-import { Route as AppAiRouteImport } from './routes/_app.ai'
+import { Route as AuthenticatedTablesRouteImport } from './routes/_authenticated.tables'
+import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated.staff'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated.reports'
+import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated.pos'
+import { Route as AuthenticatedOwnerRouteImport } from './routes/_authenticated.owner'
+import { Route as AuthenticatedKitchenRouteImport } from './routes/_authenticated.kitchen'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated.customers'
+import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated.ai'
 
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
+const StaffLoginRoute = StaffLoginRouteImport.update({
+  id: '/staff-login',
+  path: '/staff-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -30,142 +50,206 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppStaffRoute = AppStaffRouteImport.update({
+const AuthenticatedTablesRoute = AuthenticatedTablesRouteImport.update({
+  id: '/tables',
+  path: '/tables',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppReportsRoute = AppReportsRouteImport.update({
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppPosRoute = AppPosRouteImport.update({
+const AuthenticatedPosRoute = AuthenticatedPosRouteImport.update({
   id: '/pos',
   path: '/pos',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppOwnerRoute = AppOwnerRouteImport.update({
+const AuthenticatedOwnerRoute = AuthenticatedOwnerRouteImport.update({
   id: '/owner',
   path: '/owner',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppInventoryRoute = AppInventoryRouteImport.update({
+const AuthenticatedKitchenRoute = AuthenticatedKitchenRouteImport.update({
+  id: '/kitchen',
+  path: '/kitchen',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppCustomersRoute = AppCustomersRouteImport.update({
+const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppAiRoute = AppAiRouteImport.update({
+const AuthenticatedAiRoute = AuthenticatedAiRouteImport.update({
   id: '/ai',
   path: '/ai',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ai': typeof AppAiRoute
-  '/customers': typeof AppCustomersRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/inventory': typeof AppInventoryRoute
-  '/owner': typeof AppOwnerRoute
-  '/pos': typeof AppPosRoute
-  '/reports': typeof AppReportsRoute
-  '/settings': typeof AppSettingsRoute
-  '/staff': typeof AppStaffRoute
+  '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
+  '/staff-login': typeof StaffLoginRoute
+  '/ai': typeof AuthenticatedAiRoute
+  '/customers': typeof AuthenticatedCustomersRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/kitchen': typeof AuthenticatedKitchenRoute
+  '/owner': typeof AuthenticatedOwnerRoute
+  '/pos': typeof AuthenticatedPosRoute
+  '/reports': typeof AuthenticatedReportsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/staff': typeof AuthenticatedStaffRoute
+  '/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ai': typeof AppAiRoute
-  '/customers': typeof AppCustomersRoute
-  '/dashboard': typeof AppDashboardRoute
-  '/inventory': typeof AppInventoryRoute
-  '/owner': typeof AppOwnerRoute
-  '/pos': typeof AppPosRoute
-  '/reports': typeof AppReportsRoute
-  '/settings': typeof AppSettingsRoute
-  '/staff': typeof AppStaffRoute
+  '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
+  '/staff-login': typeof StaffLoginRoute
+  '/ai': typeof AuthenticatedAiRoute
+  '/customers': typeof AuthenticatedCustomersRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/inventory': typeof AuthenticatedInventoryRoute
+  '/kitchen': typeof AuthenticatedKitchenRoute
+  '/owner': typeof AuthenticatedOwnerRoute
+  '/pos': typeof AuthenticatedPosRoute
+  '/reports': typeof AuthenticatedReportsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/staff': typeof AuthenticatedStaffRoute
+  '/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_app': typeof AppRouteWithChildren
-  '/_app/ai': typeof AppAiRoute
-  '/_app/customers': typeof AppCustomersRoute
-  '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/inventory': typeof AppInventoryRoute
-  '/_app/owner': typeof AppOwnerRoute
-  '/_app/pos': typeof AppPosRoute
-  '/_app/reports': typeof AppReportsRoute
-  '/_app/settings': typeof AppSettingsRoute
-  '/_app/staff': typeof AppStaffRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
+  '/staff-login': typeof StaffLoginRoute
+  '/_authenticated/ai': typeof AuthenticatedAiRoute
+  '/_authenticated/customers': typeof AuthenticatedCustomersRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
+  '/_authenticated/kitchen': typeof AuthenticatedKitchenRoute
+  '/_authenticated/owner': typeof AuthenticatedOwnerRoute
+  '/_authenticated/pos': typeof AuthenticatedPosRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/staff': typeof AuthenticatedStaffRoute
+  '/_authenticated/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/signup'
+    | '/staff-login'
     | '/ai'
     | '/customers'
     | '/dashboard'
     | '/inventory'
+    | '/kitchen'
     | '/owner'
     | '/pos'
     | '/reports'
     | '/settings'
     | '/staff'
+    | '/tables'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/signup'
+    | '/staff-login'
     | '/ai'
     | '/customers'
     | '/dashboard'
     | '/inventory'
+    | '/kitchen'
     | '/owner'
     | '/pos'
     | '/reports'
     | '/settings'
     | '/staff'
+    | '/tables'
   id:
     | '__root__'
     | '/'
-    | '/_app'
-    | '/_app/ai'
-    | '/_app/customers'
-    | '/_app/dashboard'
-    | '/_app/inventory'
-    | '/_app/owner'
-    | '/_app/pos'
-    | '/_app/reports'
-    | '/_app/settings'
-    | '/_app/staff'
+    | '/_authenticated'
+    | '/auth'
+    | '/signup'
+    | '/staff-login'
+    | '/_authenticated/ai'
+    | '/_authenticated/customers'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/inventory'
+    | '/_authenticated/kitchen'
+    | '/_authenticated/owner'
+    | '/_authenticated/pos'
+    | '/_authenticated/reports'
+    | '/_authenticated/settings'
+    | '/_authenticated/staff'
+    | '/_authenticated/tables'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  SignupRoute: typeof SignupRoute
+  StaffLoginRoute: typeof StaffLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_app': {
-      id: '/_app'
+    '/staff-login': {
+      id: '/staff-login'
+      path: '/staff-login'
+      fullPath: '/staff-login'
+      preLoaderRoute: typeof StaffLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -175,112 +259,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/staff': {
-      id: '/_app/staff'
+    '/_authenticated/tables': {
+      id: '/_authenticated/tables'
+      path: '/tables'
+      fullPath: '/tables'
+      preLoaderRoute: typeof AuthenticatedTablesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/staff': {
+      id: '/_authenticated/staff'
       path: '/staff'
       fullPath: '/staff'
-      preLoaderRoute: typeof AppStaffRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedStaffRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/settings': {
-      id: '/_app/settings'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/reports': {
-      id: '/_app/reports'
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
       path: '/reports'
       fullPath: '/reports'
-      preLoaderRoute: typeof AppReportsRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/pos': {
-      id: '/_app/pos'
+    '/_authenticated/pos': {
+      id: '/_authenticated/pos'
       path: '/pos'
       fullPath: '/pos'
-      preLoaderRoute: typeof AppPosRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedPosRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/owner': {
-      id: '/_app/owner'
+    '/_authenticated/owner': {
+      id: '/_authenticated/owner'
       path: '/owner'
       fullPath: '/owner'
-      preLoaderRoute: typeof AppOwnerRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedOwnerRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/inventory': {
-      id: '/_app/inventory'
+    '/_authenticated/kitchen': {
+      id: '/_authenticated/kitchen'
+      path: '/kitchen'
+      fullPath: '/kitchen'
+      preLoaderRoute: typeof AuthenticatedKitchenRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
       path: '/inventory'
       fullPath: '/inventory'
-      preLoaderRoute: typeof AppInventoryRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/customers': {
-      id: '/_app/customers'
+    '/_authenticated/customers': {
+      id: '/_authenticated/customers'
       path: '/customers'
       fullPath: '/customers'
-      preLoaderRoute: typeof AppCustomersRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_app/ai': {
-      id: '/_app/ai'
+    '/_authenticated/ai': {
+      id: '/_authenticated/ai'
       path: '/ai'
       fullPath: '/ai'
-      preLoaderRoute: typeof AppAiRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAiRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
-interface AppRouteChildren {
-  AppAiRoute: typeof AppAiRoute
-  AppCustomersRoute: typeof AppCustomersRoute
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppInventoryRoute: typeof AppInventoryRoute
-  AppOwnerRoute: typeof AppOwnerRoute
-  AppPosRoute: typeof AppPosRoute
-  AppReportsRoute: typeof AppReportsRoute
-  AppSettingsRoute: typeof AppSettingsRoute
-  AppStaffRoute: typeof AppStaffRoute
+interface AuthenticatedRouteChildren {
+  AuthenticatedAiRoute: typeof AuthenticatedAiRoute
+  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
+  AuthenticatedKitchenRoute: typeof AuthenticatedKitchenRoute
+  AuthenticatedOwnerRoute: typeof AuthenticatedOwnerRoute
+  AuthenticatedPosRoute: typeof AuthenticatedPosRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedStaffRoute: typeof AuthenticatedStaffRoute
+  AuthenticatedTablesRoute: typeof AuthenticatedTablesRoute
 }
 
-const AppRouteChildren: AppRouteChildren = {
-  AppAiRoute: AppAiRoute,
-  AppCustomersRoute: AppCustomersRoute,
-  AppDashboardRoute: AppDashboardRoute,
-  AppInventoryRoute: AppInventoryRoute,
-  AppOwnerRoute: AppOwnerRoute,
-  AppPosRoute: AppPosRoute,
-  AppReportsRoute: AppReportsRoute,
-  AppSettingsRoute: AppSettingsRoute,
-  AppStaffRoute: AppStaffRoute,
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAiRoute: AuthenticatedAiRoute,
+  AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
+  AuthenticatedKitchenRoute: AuthenticatedKitchenRoute,
+  AuthenticatedOwnerRoute: AuthenticatedOwnerRoute,
+  AuthenticatedPosRoute: AuthenticatedPosRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedStaffRoute: AuthenticatedStaffRoute,
+  AuthenticatedTablesRoute: AuthenticatedTablesRoute,
 }
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  SignupRoute: SignupRoute,
+  StaffLoginRoute: StaffLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
