@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { KES } from "@/lib/mock-data";
 import { Bell, TrendingUp, Package, AlertTriangle, MessageCircle, MapPin, ChevronRight, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/_app/owner")({
+export const Route = createFileRoute("/_authenticated/owner")({
   head: () => ({ meta: [{ title: "Owner Mobile App — KaliPOS" }, { name: "description", content: "Run your shops from your phone." }] }),
   component: Owner,
 });

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { TrendingUp, Wallet, ShoppingBag, Receipt, Sparkles, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/_app/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — KaliPOS" }, { name: "description", content: "Live sales, profit, AI insights for your shop." }] }),
   component: Dashboard,
 });

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Smartphone, Store, Bell, Globe, Shield } from "lucide-react";
 
-export const Route = createFileRoute("/_app/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — KaliPOS" }, { name: "description", content: "Shop, M-Pesa, branches and preferences." }] }),
   component: Settings,
 });
