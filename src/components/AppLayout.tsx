@@ -1,13 +1,23 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell, Search, Sun, Moon } from "lucide-react";
+import { Bell, Search, Sun, Moon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppLayout() {
   const [dark, setDark] = useState(false);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
@@ -34,9 +44,9 @@ export function AppLayout() {
                 <Bell className="h-4 w-4" />
                 <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive" />
               </Button>
-              <div className="h-8 w-8 rounded-full gradient-primary grid place-items-center text-primary-foreground text-xs font-semibold ml-1">
-                JK
-              </div>
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={signOut} title="Sign out">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto animate-slide-up">

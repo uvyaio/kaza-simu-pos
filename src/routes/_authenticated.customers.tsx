@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Plus, Star } from "lucide-react";
 
-export const Route = createFileRoute("/_app/customers")({
+export const Route = createFileRoute("/_authenticated/customers")({
   head: () => ({ meta: [{ title: "Customers — KaliPOS" }, { name: "description", content: "Customer profiles, loyalty points and WhatsApp promos." }] }),
   component: Customers,
 });

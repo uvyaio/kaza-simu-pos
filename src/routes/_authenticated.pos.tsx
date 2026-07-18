@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/pos")({
+export const Route = createFileRoute("/_authenticated/pos")({
   head: () => ({ meta: [{ title: "Menu & POS — Kato's Kitchen" }, { name: "description", content: "Kato's Kitchen menu, day-of-week planner and fast M-Pesa checkout." }] }),
   component: POS,
 });

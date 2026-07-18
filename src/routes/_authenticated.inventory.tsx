@@ -9,7 +9,7 @@ import { Plus, Search, Filter, AlertTriangle, Sparkles, ShoppingCart, UtensilsCr
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/inventory")({
+export const Route = createFileRoute("/_authenticated/inventory")({
   head: () => ({ meta: [{ title: "Inventory — KaliPOS" }, { name: "description", content: "Track kitchen ingredients, menu items, expiry and shopping lists." }] }),
   component: Inventory,
 });

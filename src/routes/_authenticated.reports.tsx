@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { Download, TrendingUp, Clock, Package } from "lucide-react";
 
-export const Route = createFileRoute("/_app/reports")({
+export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({ meta: [{ title: "Reports & Analytics — KaliPOS" }, { name: "description", content: "Sales, profit, top products and peak hours." }] }),
   component: Reports,
 });

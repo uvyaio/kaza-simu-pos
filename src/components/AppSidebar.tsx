@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, ShoppingCart, Package, BarChart3, Sparkles,
-  Users, UserCog, Settings, Smartphone, Store, Wifi, WifiOff,
+  Users, UserCog, Settings, Smartphone, Store, Wifi, WifiOff, ChefHat, LayoutGrid,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -9,19 +9,24 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
+import { useMyContext, type Role } from "@/hooks/use-my-context";
 
-const main = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "POS Checkout", url: "/pos", icon: ShoppingCart },
-  { title: "Inventory", url: "/inventory", icon: Package },
-  { title: "Reports", url: "/reports", icon: BarChart3 },
-  { title: "AI Assistant", url: "/ai", icon: Sparkles },
+type Item = { title: string; url: string; icon: any; roles: Role[] };
+
+const operate: Item[] = [
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, roles: ["owner", "manager"] },
+  { title: "POS Checkout", url: "/pos", icon: ShoppingCart, roles: ["owner", "manager", "cashier"] },
+  { title: "Kitchen", url: "/kitchen", icon: ChefHat, roles: ["owner", "manager", "kitchen"] },
+  { title: "Tables", url: "/tables", icon: LayoutGrid, roles: ["owner", "manager", "waiter"] },
+  { title: "Inventory", url: "/inventory", icon: Package, roles: ["owner", "manager"] },
+  { title: "Reports", url: "/reports", icon: BarChart3, roles: ["owner", "manager"] },
+  { title: "AI Assistant", url: "/ai", icon: Sparkles, roles: ["owner", "manager"] },
 ];
-const manage = [
-  { title: "Customers", url: "/customers", icon: Users },
-  { title: "Staff", url: "/staff", icon: UserCog },
-  { title: "Owner App", url: "/owner", icon: Smartphone },
-  { title: "Settings", url: "/settings", icon: Settings },
+const manage: Item[] = [
+  { title: "Customers", url: "/customers", icon: Users, roles: ["owner", "manager", "cashier", "waiter"] },
+  { title: "Staff", url: "/staff", icon: UserCog, roles: ["owner"] },
+  { title: "Owner App", url: "/owner", icon: Smartphone, roles: ["owner"] },
+  { title: "Settings", url: "/settings", icon: Settings, roles: ["owner"] },
 ];
 
 export function AppSidebar() {
@@ -29,6 +34,10 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const path = useRouterState({ select: (r) => r.location.pathname });
   const [online, setOnline] = useState(true);
+  const { data } = useMyContext();
+  const role = data?.role ?? "owner";
+  const visibleOp = operate.filter((i) => i.roles.includes(role));
+  const visibleMg = manage.filter((i) => i.roles.includes(role));
 
   return (
     <Sidebar collapsible="icon">
@@ -40,7 +49,9 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="flex flex-col">
               <span className="font-display text-base font-bold tracking-tight">Kato's Kitchen</span>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Powered by KaliPOS</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {data?.profile?.full_name ? `${data.profile.full_name} · ${role}` : "Powered by KaliPOS"}
+              </span>
             </div>
           )}
         </Link>
@@ -50,7 +61,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Operate</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {main.map((item) => (
+              {visibleOp.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={path === item.url}>
                     <Link to={item.url} className="flex items-center gap-2.5">
@@ -63,43 +74,38 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Manage</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {manage.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={path === item.url}>
-                    <Link to={item.url} className="flex items-center gap-2.5">
-                      <item.icon className="h-[18px] w-[18px]" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {visibleMg.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Manage</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleMg.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton asChild isActive={path === item.url}>
+                      <Link to={item.url} className="flex items-center gap-2.5">
+                        <item.icon className="h-[18px] w-[18px]" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border">
         <button
           onClick={() => setOnline(!online)}
           className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-sidebar-accent transition-colors"
         >
-          {online ? (
-            <Wifi className="h-4 w-4 text-success" />
-          ) : (
-            <WifiOff className="h-4 w-4 text-warning" />
-          )}
+          {online ? <Wifi className="h-4 w-4 text-success" /> : <WifiOff className="h-4 w-4 text-warning" />}
           {!collapsed && (
             <div className="flex flex-col items-start text-left">
               <span className="text-xs font-medium">{online ? "Online & synced" : "Working offline"}</span>
-              <span className="text-[10px] text-muted-foreground">
-                {online ? "All data live" : "Will sync when back"}
-              </span>
+              <span className="text-[10px] text-muted-foreground">{online ? "All data live" : "Will sync when back"}</span>
             </div>
           )}
-          {!collapsed && online && <span className="ml-auto h-2 w-2 rounded-full bg-success animate-pulse-dot" />}
         </button>
       </SidebarFooter>
     </Sidebar>

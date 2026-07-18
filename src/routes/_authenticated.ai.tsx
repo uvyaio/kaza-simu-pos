@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Send, Mic } from "lucide-react";
 
-export const Route = createFileRoute("/_app/ai")({
+export const Route = createFileRoute("/_authenticated/ai")({
   head: () => ({ meta: [{ title: "AI Assistant — KaliPOS" }, { name: "description", content: "Ask anything about your shop in plain language." }] }),
   component: AI,
 });
