@@ -20,7 +20,7 @@ function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto">
       <PageHeader
         title="Habari, Kato 👋"
-        subtitle="Here's what's cooking at Kato's Kitchen today."
+        subtitle="Kato's Kitchen runs autonomously — your full report lands every evening after close of business."
         action={
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="gap-1.5 py-1 px-2.5"><span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-dot" />Live</Badge>
@@ -28,6 +28,28 @@ function Dashboard() {
           </div>
         }
       />
+
+      <Card className="p-5 shadow-soft border-primary/30">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shrink-0">
+              <Sparkles className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h3 className="font-semibold">Close-of-business AI report</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed max-w-xl">
+                Every day at 9:00 PM the AI reconciles all M-Pesa transactions, flags unpaid orders, ranks best-selling
+                dishes and drafts tomorrow's shopping list — then sends it to you. Nothing else needs your attention.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge variant="secondary" className="py-1">Next: 9:00 PM</Badge>
+            <Button variant="outline" size="sm">Preview report</Button>
+          </div>
+        </div>
+      </Card>
+
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Today's sales" value={KES(58420)} delta="+12.4% vs yesterday" tone="success" icon={<Wallet className="h-5 w-5" />} />
