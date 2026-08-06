@@ -14,7 +14,7 @@ export function useMyContext() {
 }
 
 export const roleLandingPath: Record<Role, string> = {
-  owner: "/owner",
+  owner: "/dashboard",
   manager: "/dashboard",
   cashier: "/pos",
   kitchen: "/orders",
@@ -22,7 +22,7 @@ export const roleLandingPath: Record<Role, string> = {
 };
 
 export const rolesAllowedByPath: Record<string, Role[]> = {
-  "/owner": ["owner"],
+  
   "/dashboard": ["owner", "manager"],
   "/reports": ["owner", "manager"],
   "/inventory": ["owner", "manager"],
