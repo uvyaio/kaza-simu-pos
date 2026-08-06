@@ -120,20 +120,22 @@ export const staffLogin = createServerFn({ method: "POST" })
 export const getMyContext = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const [profile, roleRow, restaurant] = await Promise.all([
+    const [profile, roleRow] = await Promise.all([
       context.supabase
         .from("profiles")
         .select("id, restaurant_id, full_name, email, phone, status, last_login_at, created_at")
         .eq("id", context.userId)
         .maybeSingle(),
       context.supabase.from("user_roles").select("role, restaurant_id").eq("user_id", context.userId).maybeSingle(),
-      context.supabase.rpc("current_restaurant_id"),
     ]);
     return {
       userId: context.userId,
       profile: profile.data,
       role: (roleRow.data?.role ?? null) as Role | null,
-      restaurantId: (roleRow.data?.restaurant_id as string | undefined) ?? (restaurant.data as string | undefined) ?? null,
+      restaurantId:
+        (roleRow.data?.restaurant_id as string | undefined) ??
+        (profile.data?.restaurant_id as string | undefined) ??
+        null,
     };
   });
 
