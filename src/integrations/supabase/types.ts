@@ -191,10 +191,6 @@ export type Database = {
     }
     Functions: {
       current_restaurant_id: { Args: never; Returns: string }
-      current_user_role: {
-        Args: never
-        Returns: Database["public"]["Enums"]["app_role"]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
