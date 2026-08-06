@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, ShoppingCart, Package, BarChart3, Sparkles,
-  Users, UserCog, Settings, Smartphone, Store, Wifi, WifiOff, ChefHat,
+  Users, UserCog, Settings, Store, Wifi, WifiOff, ChefHat,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -24,7 +24,7 @@ const operate: Item[] = [
 const manage: Item[] = [
   { title: "Customers", url: "/customers", icon: Users, roles: ["owner", "manager", "cashier", "waiter"] },
   { title: "Staff", url: "/staff", icon: UserCog, roles: ["owner"] },
-  { title: "Owner App", url: "/owner", icon: Smartphone, roles: ["owner"] },
+  
   { title: "Settings", url: "/settings", icon: Settings, roles: ["owner"] },
 ];
 

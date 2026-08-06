@@ -71,102 +71,122 @@ function POS() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_440px] h-[calc(100vh-3.5rem)]">
-      <div className="overflow-auto p-4 lg:p-6 border-r">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search dishes on today's menu..." className="pl-10 h-12 text-base" />
+    <div className="grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] h-[calc(100vh-3.5rem)] bg-muted/30">
+      <div className="overflow-auto border-r">
+        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b px-4 lg:px-6 py-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search today's menu…" className="pl-10 h-11 rounded-xl bg-card" />
+            </div>
+            <Button variant="outline" className="h-11 w-11 p-0 rounded-xl shrink-0" onClick={() => setScanOpen(true)} title="Scan code"><ScanLine className="h-5 w-5" /></Button>
+            <Button className="h-11 rounded-xl gap-1.5 gradient-primary border-0 shrink-0" onClick={() => setAddOpen(true)}>
+              <PlusCircle className="h-4 w-4" /> <span className="hidden sm:inline">Add dish</span>
+            </Button>
           </div>
-          <Button size="lg" variant="outline" className="h-12 w-12 p-0" onClick={() => setScanOpen(true)} title="Scan code"><ScanLine className="h-5 w-5" /></Button>
-          <Button size="lg" className="h-12 gap-1.5 gradient-primary border-0" onClick={() => setAddOpen(true)}>
-            <PlusCircle className="h-4 w-4" /> <span className="hidden sm:inline">Add dish</span>
-          </Button>
-        </div>
 
-        {/* Day-of-week planner */}
-        <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1 shrink-0">Menu day</span>
-          {DAYS.map(d => (
-            <button key={d} onClick={() => setActiveDay(d)}
-              className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors border",
-                activeDay === d ? "bg-primary text-primary-foreground border-primary shadow-soft" : "bg-card hover:bg-muted",
-                d === todayDay() && activeDay !== d && "border-primary/40 text-primary")}>
-              {d}{d === todayDay() && <span className="ml-1 opacity-70">•</span>}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-          {cats.map(c => (
-            <button key={c} onClick={() => setActiveCat(c)}
-              className={cn("px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border",
-                activeCat === c ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted")}>
-              {c}
-            </button>
-          ))}
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-            No dishes on the {activeDay} menu yet. Tap <span className="font-semibold text-foreground">Add dish</span> to create one.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {filtered.map(p => (
-              <button key={p.id} onClick={() => addToCart(p)}
-                className="text-left rounded-2xl border bg-card p-4 hover:border-primary hover:shadow-elevated transition-all active:scale-[0.98]">
-                <div className="text-3xl mb-2">{p.emoji}</div>
-                <div className="text-sm font-semibold leading-tight line-clamp-2">{p.name}</div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">{p.category}</div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-base font-bold text-primary">{KES(p.price)}</span>
-                  <Badge variant="secondary" className={cn("text-[10px]", p.stock <= p.reorder && "bg-warning/20 text-warning-foreground")}>
-                    {p.stock} {p.unit}
-                  </Badge>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {p.days.length === 7 ? (
-                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Everyday</span>
-                  ) : p.days.map(d => (
-                    <span key={d} className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{d}</span>
-                  ))}
-                </div>
+          {/* Day-of-week segmented control */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/70 overflow-x-auto">
+            {DAYS.map(d => (
+              <button key={d} onClick={() => setActiveDay(d)}
+                className={cn("flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all",
+                  activeDay === d ? "bg-card text-primary shadow-soft" : "text-muted-foreground hover:text-foreground")}>
+                {d}{d === todayDay() && <span className="ml-1 text-primary">•</span>}
               </button>
             ))}
           </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
+            {cats.map(c => (
+              <button key={c} onClick={() => setActiveCat(c)}
+                className={cn("px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-colors",
+                  activeCat === c ? "bg-foreground text-background border-foreground" : "bg-card text-muted-foreground hover:text-foreground")}>
+                {c}
+              </button>
+            ))}
+            <span className="ml-auto shrink-0 text-[11px] text-muted-foreground pl-2">{filtered.length} dishes</span>
+          </div>
+        </div>
+
+        <div className="p-4 lg:p-6">
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed p-10 text-center text-sm text-muted-foreground bg-card">
+            No dishes on the {activeDay} menu yet. Tap <span className="font-semibold text-foreground">Add dish</span> to create one.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
+            {filtered.map(p => {
+              const low = p.stock <= p.reorder;
+              return (
+              <button key={p.id} onClick={() => addToCart(p)}
+                className="group relative text-left rounded-2xl border bg-card p-3.5 flex gap-3.5 items-center hover:border-primary/60 hover:shadow-elevated transition-all active:scale-[0.985]">
+                <div className="h-16 w-16 shrink-0 rounded-xl bg-primary-soft grid place-items-center text-3xl">
+                  {p.emoji}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold leading-tight truncate">{p.name}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                        {p.category}
+                        {p.days.length !== 7 && <span> · {p.days.join(", ")}</span>}
+                      </div>
+                    </div>
+                    {low && (
+                      <Badge variant="secondary" className="shrink-0 text-[10px] bg-warning/20 text-warning-foreground">Low</Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-lg font-bold tracking-tight">{KES(p.price)}</span>
+                    <span className="text-[11px] text-muted-foreground">{p.stock} {p.unit}</span>
+                  </div>
+                </div>
+                <div className="absolute right-3 -top-2 h-7 w-7 rounded-full gradient-primary grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft">
+                  <Plus className="h-4 w-4 text-primary-foreground" />
+                </div>
+              </button>
+            );})}
+          </div>
         )}
+        </div>
       </div>
 
+
       <div className="flex flex-col bg-card max-h-[calc(100vh-3.5rem)]">
-        <div className="p-5 border-b">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-lg">Current order</h2>
-            <Badge variant="outline" className="gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-success" />Ticket #1842</Badge>
+        <div className="px-5 py-4 border-b">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <h2 className="font-semibold text-base truncate">Current order</h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Mercy A. · Kato's Kitchen</p>
+            </div>
+            <Badge variant="outline" className="gap-1.5 shrink-0"><span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-dot" />#1842</Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Waiter: Mercy A. · Kato's Kitchen</p>
         </div>
 
         <div className="flex-1 overflow-auto p-3 space-y-2">
           {cart.length === 0 && (
-            <div className="text-center py-12 text-sm text-muted-foreground">No dishes yet. Tap a card to add.</div>
+            <div className="rounded-2xl border border-dashed py-14 text-center text-sm text-muted-foreground">
+              <div className="text-3xl mb-2">🧾</div>
+              No dishes yet — tap a menu card.
+            </div>
           )}
           {cart.map(item => (
-            <div key={item.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/40">
-              <div className="text-2xl">{item.emoji}</div>
+            <div key={item.id} className="group flex items-center gap-3 p-2.5 rounded-xl border bg-background/60 hover:border-primary/40 transition-colors">
+              <div className="h-10 w-10 shrink-0 rounded-lg bg-primary-soft grid place-items-center text-xl">{item.emoji}</div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{item.name}</div>
-                <div className="text-xs text-muted-foreground">{KES(item.price)} × {item.qty}</div>
+                <div className="text-sm font-semibold truncate">{item.name}</div>
+                <div className="text-[11px] text-muted-foreground">{KES(item.price)} × {item.qty} = <span className="font-medium text-foreground">{KES(item.price * item.qty)}</span></div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => setQty(item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                <span className="w-6 text-center text-sm font-semibold">{item.qty}</span>
-                <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => setQty(item.id, 1)}><Plus className="h-3 w-3" /></Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+              <div className="flex items-center gap-0.5 shrink-0">
+                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg" onClick={() => setQty(item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                <span className="w-6 text-center text-sm font-bold">{item.qty}</span>
+                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg" onClick={() => setQty(item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => remove(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
               </div>
             </div>
           ))}
         </div>
+
 
         <div className="border-t p-4 space-y-3 bg-card">
           <div className="space-y-1.5 text-sm">
