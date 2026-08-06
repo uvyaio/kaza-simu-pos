@@ -17,8 +17,8 @@ export const roleLandingPath: Record<Role, string> = {
   owner: "/owner",
   manager: "/dashboard",
   cashier: "/pos",
-  kitchen: "/kitchen",
-  waiter: "/tables",
+  kitchen: "/orders",
+  waiter: "/orders",
 };
 
 export const rolesAllowedByPath: Record<string, Role[]> = {
@@ -31,6 +31,5 @@ export const rolesAllowedByPath: Record<string, Role[]> = {
   "/staff": ["owner"],
   "/customers": ["owner", "manager", "cashier", "waiter"],
   "/pos": ["owner", "manager", "cashier"],
-  "/kitchen": ["owner", "manager", "kitchen"],
-  "/tables": ["owner", "manager", "waiter"],
+  "/orders": ["owner", "manager", "kitchen", "waiter"],
 };

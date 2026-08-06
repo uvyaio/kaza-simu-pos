@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, ShoppingCart, Package, BarChart3, Sparkles,
-  Users, UserCog, Settings, Smartphone, Store, Wifi, WifiOff, ChefHat, LayoutGrid,
+  Users, UserCog, Settings, Smartphone, Store, Wifi, WifiOff, ChefHat,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
