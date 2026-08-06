@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/orders")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: OrdersView;
+  component: OrdersView,
 });
 
 type Status = "new" | "preparing" | "ready";
