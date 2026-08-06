@@ -206,12 +206,20 @@ export const createStaff = createServerFn({ method: "POST" })
 export const listStaff = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const rows = await context.supabase
-      .from("profiles")
-      .select("id, full_name, phone, status, last_login_at, user_roles(role)")
-      .order("created_at", { ascending: false });
+    const [rows, roles] = await Promise.all([
+      context.supabase
+        .from("profiles")
+        .select("id, full_name, phone, status, last_login_at")
+        .order("created_at", { ascending: false }),
+      context.supabase.from("user_roles").select("user_id, role"),
+    ]);
     if (rows.error) throw new Error(rows.error.message);
-    return rows.data ?? [];
+    if (roles.error) throw new Error(roles.error.message);
+    const roleByUser = new Map((roles.data ?? []).map((r) => [r.user_id, r.role]));
+    return (rows.data ?? []).map((p) => ({
+      ...p,
+      user_roles: roleByUser.has(p.id) ? [{ role: roleByUser.get(p.id)! }] : [],
+    }));
   });
 
 export const resetStaffPin = createServerFn({ method: "POST" })
