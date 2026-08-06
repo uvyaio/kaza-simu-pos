@@ -18,14 +18,12 @@ import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated.ai'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated.customers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
-import { Route as AuthenticatedKitchenRouteImport } from './routes/_authenticated.kitchen'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated.orders'
 import { Route as AuthenticatedOwnerRouteImport } from './routes/_authenticated.owner'
 import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated.pos'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated.reports'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated.staff'
-import { Route as AuthenticatedTablesRouteImport } from './routes/_authenticated.tables'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,11 +69,6 @@ const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedKitchenRoute = AuthenticatedKitchenRouteImport.update({
-  id: '/kitchen',
-  path: '/kitchen',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -106,11 +99,6 @@ const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
   path: '/staff',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedTablesRoute = AuthenticatedTablesRouteImport.update({
-  id: '/tables',
-  path: '/tables',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,14 +109,12 @@ export interface FileRoutesByFullPath {
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/inventory': typeof AuthenticatedInventoryRoute
-  '/kitchen': typeof AuthenticatedKitchenRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/owner': typeof AuthenticatedOwnerRoute
   '/pos': typeof AuthenticatedPosRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/staff': typeof AuthenticatedStaffRoute
-  '/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,14 +125,12 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/inventory': typeof AuthenticatedInventoryRoute
-  '/kitchen': typeof AuthenticatedKitchenRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/owner': typeof AuthenticatedOwnerRoute
   '/pos': typeof AuthenticatedPosRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/staff': typeof AuthenticatedStaffRoute
-  '/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,14 +143,12 @@ export interface FileRoutesById {
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
-  '/_authenticated/kitchen': typeof AuthenticatedKitchenRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/owner': typeof AuthenticatedOwnerRoute
   '/_authenticated/pos': typeof AuthenticatedPosRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/staff': typeof AuthenticatedStaffRoute
-  '/_authenticated/tables': typeof AuthenticatedTablesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,14 +161,12 @@ export interface FileRouteTypes {
     | '/customers'
     | '/dashboard'
     | '/inventory'
-    | '/kitchen'
     | '/orders'
     | '/owner'
     | '/pos'
     | '/reports'
     | '/settings'
     | '/staff'
-    | '/tables'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -197,14 +177,12 @@ export interface FileRouteTypes {
     | '/customers'
     | '/dashboard'
     | '/inventory'
-    | '/kitchen'
     | '/orders'
     | '/owner'
     | '/pos'
     | '/reports'
     | '/settings'
     | '/staff'
-    | '/tables'
   id:
     | '__root__'
     | '/'
@@ -216,14 +194,12 @@ export interface FileRouteTypes {
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/inventory'
-    | '/_authenticated/kitchen'
     | '/_authenticated/orders'
     | '/_authenticated/owner'
     | '/_authenticated/pos'
     | '/_authenticated/reports'
     | '/_authenticated/settings'
     | '/_authenticated/staff'
-    | '/_authenticated/tables'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -299,13 +275,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/kitchen': {
-      id: '/_authenticated/kitchen'
-      path: '/kitchen'
-      fullPath: '/kitchen'
-      preLoaderRoute: typeof AuthenticatedKitchenRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/orders': {
       id: '/_authenticated/orders'
       path: '/orders'
@@ -348,13 +317,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStaffRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/tables': {
-      id: '/_authenticated/tables'
-      path: '/tables'
-      fullPath: '/tables'
-      preLoaderRoute: typeof AuthenticatedTablesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
   }
 }
 
@@ -363,14 +325,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
-  AuthenticatedKitchenRoute: typeof AuthenticatedKitchenRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedOwnerRoute: typeof AuthenticatedOwnerRoute
   AuthenticatedPosRoute: typeof AuthenticatedPosRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStaffRoute: typeof AuthenticatedStaffRoute
-  AuthenticatedTablesRoute: typeof AuthenticatedTablesRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -378,14 +338,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
-  AuthenticatedKitchenRoute: AuthenticatedKitchenRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedOwnerRoute: AuthenticatedOwnerRoute,
   AuthenticatedPosRoute: AuthenticatedPosRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStaffRoute: AuthenticatedStaffRoute,
-  AuthenticatedTablesRoute: AuthenticatedTablesRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

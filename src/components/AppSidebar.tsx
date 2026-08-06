@@ -16,8 +16,7 @@ type Item = { title: string; url: string; icon: any; roles: Role[] };
 const operate: Item[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, roles: ["owner", "manager"] },
   { title: "POS Checkout", url: "/pos", icon: ShoppingCart, roles: ["owner", "manager", "cashier"] },
-  { title: "Kitchen", url: "/kitchen", icon: ChefHat, roles: ["owner", "manager", "kitchen"] },
-  { title: "Tables", url: "/tables", icon: LayoutGrid, roles: ["owner", "manager", "waiter"] },
+  { title: "Orders", url: "/orders", icon: ChefHat, roles: ["owner", "manager", "kitchen", "waiter"] },
   { title: "Inventory", url: "/inventory", icon: Package, roles: ["owner", "manager"] },
   { title: "Reports", url: "/reports", icon: BarChart3, roles: ["owner", "manager"] },
   { title: "AI Assistant", url: "/ai", icon: Sparkles, roles: ["owner", "manager"] },
