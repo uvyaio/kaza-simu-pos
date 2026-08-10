@@ -18,6 +18,29 @@ export const Route = createFileRoute("/_authenticated/pos")({
 });
 
 type CartItem = Product & { qty: number };
+type PayMethod = "mpesa" | "cash" | "split";
+type PayStep = "breakdown" | "details" | "confirm" | "done";
+
+const STEPS = [
+  { id: "breakdown", label: "Breakdown" },
+  { id: "details", label: "Payment" },
+  { id: "confirm", label: "Confirm" },
+] as const;
+
+const TILLS = [
+  { id: "till-main", name: "Kato's Kitchen — Main", type: "Till (Buy Goods)", number: "174379" },
+  { id: "paybill", name: "Kato's Kitchen — Paybill", type: "Paybill", number: "400200 · KATO01" },
+  { id: "till-delivery", name: "Deliveries & Riders", type: "Till (Buy Goods)", number: "988021" },
+] as const;
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-3 py-2">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-right truncate">{value}</span>
+    </div>
+  );
+}
 
 const todayDay = (): Day => DAYS[(new Date().getDay() + 6) % 7]; // Mon-first
 
