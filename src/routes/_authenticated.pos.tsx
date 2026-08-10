@@ -53,7 +53,7 @@ function POS() {
   ]);
   const [method, setMethod] = useState<null | PayMethod>(null);
   const [step, setStep] = useState<PayStep>("breakdown");
-  const [till, setTill] = useState(TILLS[0].id);
+  const [till, setTill] = useState<string>(TILLS[0].id);
   const [phone, setPhone] = useState("");
   const [cashGiven, setCashGiven] = useState<number | "">("");
   const [splitMpesa, setSplitMpesa] = useState<number | "">("");
@@ -245,7 +245,7 @@ function POS() {
             {step !== "done" && (
               <div className="flex items-center gap-2 mb-5 pr-8">
                 {STEPS.map((s, i) => {
-                  const active = STEPS.indexOf(step as (typeof STEPS)[number]) >= i;
+                  const active = STEPS.findIndex(x => x.id === step) >= i;
                   return (
                     <div key={s.id} className="flex-1 flex items-center gap-2">
                       <div className={cn("h-6 w-6 shrink-0 rounded-full grid place-items-center text-[11px] font-bold",
