@@ -98,6 +98,35 @@ function POS() {
     setAddOpen(false);
   };
 
+  const selectedTill = TILLS.find(t => t.id === till) ?? TILLS[0];
+  const mpesaPart = method === "split" ? Math.min(total, Number(splitMpesa || 0)) : method === "mpesa" ? total : 0;
+
+  const openPay = (m: PayMethod) => {
+    if (cart.length === 0) { toast.error("Add a dish to the order first"); return; }
+    setMethod(m);
+    setStep("breakdown");
+    setCashGiven("");
+    setSplitMpesa("");
+  };
+  const closePay = () => { setMethod(null); setStep("breakdown"); };
+  const goConfirm = () => {
+    if (method !== "cash" && !/^\+?\d[\d\s]{7,}$/.test(phone.trim())) {
+      toast.error("Enter a valid customer phone number");
+      return;
+    }
+    if (method === "split" && (!splitMpesa || Number(splitMpesa) <= 0 || Number(splitMpesa) > total)) {
+      toast.error("Enter an M-Pesa amount up to the total");
+      return;
+    }
+    if (method === "cash" && Number(cashGiven || 0) < total) {
+      toast.error("Cash given is less than the amount due");
+      return;
+    }
+    setStep("confirm");
+  };
+
+
+
   return (
     <div className="grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] h-[calc(100vh-3.5rem)] bg-muted/30">
       <div className="overflow-auto border-r">
