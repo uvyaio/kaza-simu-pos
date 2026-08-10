@@ -28,7 +28,12 @@ function POS() {
     { ...seedProducts[0], qty: 1 },
     { ...seedProducts[8], qty: 2 },
   ]);
-  const [paying, setPaying] = useState<null | "mpesa" | "cash" | "split" | "done">(null);
+  const [method, setMethod] = useState<null | PayMethod>(null);
+  const [step, setStep] = useState<PayStep>("breakdown");
+  const [till, setTill] = useState(TILLS[0].id);
+  const [phone, setPhone] = useState("");
+  const [cashGiven, setCashGiven] = useState<number | "">("");
+  const [splitMpesa, setSplitMpesa] = useState<number | "">("");
   const [activeCat, setActiveCat] = useState("All");
   const [activeDay, setActiveDay] = useState<Day>(todayDay());
   const [scanOpen, setScanOpen] = useState(false);
