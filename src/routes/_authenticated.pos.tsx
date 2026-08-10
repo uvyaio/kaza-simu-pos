@@ -200,44 +200,152 @@ function POS() {
             <div className="flex justify-between text-lg font-bold pt-1.5 border-t"><span>Total</span><span>{KES(total)}</span></div>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <Button onClick={() => setPaying("mpesa")} className="h-14 flex-col gap-0.5 bg-mpesa text-mpesa-foreground hover:bg-mpesa/90">
+            <Button onClick={() => openPay("mpesa")} className="h-14 flex-col gap-0.5 bg-mpesa text-mpesa-foreground hover:bg-mpesa/90">
               <Smartphone className="h-4 w-4" /><span className="text-xs font-semibold">M-Pesa</span>
             </Button>
-            <Button onClick={() => setPaying("cash")} variant="outline" className="h-14 flex-col gap-0.5">
+            <Button onClick={() => openPay("cash")} variant="outline" className="h-14 flex-col gap-0.5">
               <Banknote className="h-4 w-4" /><span className="text-xs font-semibold">Cash</span>
             </Button>
-            <Button onClick={() => setPaying("split")} variant="outline" className="h-14 flex-col gap-0.5">
+            <Button onClick={() => openPay("split")} variant="outline" className="h-14 flex-col gap-0.5">
               <Split className="h-4 w-4" /><span className="text-xs font-semibold">Split</span>
             </Button>
           </div>
         </div>
       </div>
 
-      {paying && (
+      {method && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-foreground/40 backdrop-blur-sm p-4 animate-slide-up">
-          <Card className="w-full max-w-sm p-6 shadow-elevated">
-            <button onClick={() => setPaying(null)} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
-            {paying === "done" ? (
+          <Card className="relative w-full max-w-md p-6 shadow-elevated">
+            <button onClick={closePay} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
+
+            {/* Stepper */}
+            {step !== "done" && (
+              <div className="flex items-center gap-2 mb-5 pr-8">
+                {STEPS.map((s, i) => {
+                  const active = STEPS.indexOf(step as (typeof STEPS)[number]) >= i;
+                  return (
+                    <div key={s.id} className="flex-1 flex items-center gap-2">
+                      <div className={cn("h-6 w-6 shrink-0 rounded-full grid place-items-center text-[11px] font-bold",
+                        active ? "gradient-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{i + 1}</div>
+                      <span className={cn("text-[11px] font-semibold truncate", active ? "text-foreground" : "text-muted-foreground")}>{s.label}</span>
+                      {i < STEPS.length - 1 && <div className={cn("h-px flex-1", active ? "bg-primary/50" : "bg-border")} />}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {step === "breakdown" && (
+              <div>
+                <h3 className="text-xl font-bold">Total breakdown</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">{cart.length} item{cart.length === 1 ? "" : "s"} · {method === "mpesa" ? "M-Pesa" : method === "cash" ? "Cash" : "Split payment"}</p>
+                <div className="mt-4 rounded-xl border divide-y">
+                  {cart.map(i => (
+                    <div key={i.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                      <span className="truncate"><span className="mr-1.5">{i.emoji}</span>{i.name} <span className="text-muted-foreground">× {i.qty}</span></span>
+                      <span className="font-medium shrink-0">{KES(i.price * i.qty)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 space-y-1.5 text-sm">
+                  <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>{KES(subtotal)}</span></div>
+                  <div className="flex justify-between text-muted-foreground"><span>VAT (16%)</span><span>{KES(tax)}</span></div>
+                  <div className="flex justify-between text-xl font-bold pt-2 border-t"><span>Amount due</span><span>{KES(total)}</span></div>
+                </div>
+                <Button className="w-full mt-5 h-11 gradient-primary border-0" disabled={cart.length === 0} onClick={() => setStep("details")}>
+                  Continue
+                </Button>
+              </div>
+            )}
+
+            {step === "details" && (
+              <div>
+                <h3 className="text-xl font-bold">{method === "cash" ? "Cash payment" : "M-Pesa prompt"}</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">Amount due <span className="font-semibold text-foreground">{KES(total)}</span></p>
+
+                {method !== "cash" && (
+                  <div className="mt-4 space-y-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Receive on till / paybill</Label>
+                      <div className="grid gap-2">
+                        {TILLS.map(t => (
+                          <button key={t.id} type="button" onClick={() => setTill(t.id)}
+                            className={cn("flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                              till === t.id ? "border-mpesa bg-mpesa/10" : "hover:bg-muted/60")}>
+                            <div className="h-9 w-9 shrink-0 rounded-lg bg-mpesa/15 text-mpesa grid place-items-center"><Smartphone className="h-4 w-4" /></div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-semibold truncate">{t.name}</div>
+                              <div className="text-[11px] text-muted-foreground">{t.type} · {t.number}</div>
+                            </div>
+                            {till === t.id && <CheckCircle2 className="ml-auto h-4 w-4 text-mpesa shrink-0" />}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Customer phone</Label>
+                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XX XXX XXX" inputMode="tel" className="h-11" />
+                    </div>
+                    {method === "split" && (
+                      <div className="space-y-1.5">
+                        <Label className="text-xs">Amount on M-Pesa (rest in cash)</Label>
+                        <Input type="number" value={splitMpesa} onChange={(e) => setSplitMpesa(e.target.value === "" ? "" : Number(e.target.value))} placeholder={String(total)} className="h-11" />
+                        <p className="text-[11px] text-muted-foreground">Cash balance: {KES(Math.max(0, total - Number(splitMpesa || 0)))}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {method === "cash" && (
+                  <div className="mt-4 space-y-1.5">
+                    <Label className="text-xs">Cash given</Label>
+                    <Input type="number" value={cashGiven} onChange={(e) => setCashGiven(e.target.value === "" ? "" : Number(e.target.value))} placeholder={String(total)} className="h-11" />
+                    <p className="text-[11px] text-muted-foreground">Change due: {KES(Math.max(0, Number(cashGiven || 0) - total))}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-2 mt-5">
+                  <Button variant="outline" className="h-11" onClick={() => setStep("breakdown")}>Back</Button>
+                  <Button className="h-11 gradient-primary border-0" onClick={goConfirm}>Review</Button>
+                </div>
+              </div>
+            )}
+
+            {step === "confirm" && (
+              <div>
+                <h3 className="text-xl font-bold">Confirm sale</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">Check the details before completing.</p>
+                <div className="mt-4 rounded-xl border divide-y text-sm">
+                  <Row label="Items" value={`${cart.reduce((s, c) => s + c.qty, 0)} plates`} />
+                  <Row label="Subtotal" value={KES(subtotal)} />
+                  <Row label="VAT (16%)" value={KES(tax)} />
+                  <Row label="Method" value={method === "mpesa" ? "M-Pesa" : method === "cash" ? "Cash" : "Split"} />
+                  {method !== "cash" && <Row label="Till" value={`${selectedTill.name} · ${selectedTill.number}`} />}
+                  {method !== "cash" && <Row label="Phone" value={phone || "—"} />}
+                  {method === "split" && <Row label="M-Pesa / Cash" value={`${KES(mpesaPart)} / ${KES(total - mpesaPart)}`} />}
+                  {method === "cash" && <Row label="Change" value={KES(Math.max(0, Number(cashGiven || 0) - total))} />}
+                  <div className="flex items-center justify-between px-3 py-3 font-bold text-base"><span>Total</span><span>{KES(total)}</span></div>
+                </div>
+                {method !== "cash" && (
+                  <p className="text-xs text-muted-foreground mt-3">An STK push will be sent to {phone || "the customer"} for {KES(mpesaPart)}.</p>
+                )}
+                <div className="grid grid-cols-2 gap-2 mt-5">
+                  <Button variant="outline" className="h-11" onClick={() => setStep("details")}>Back</Button>
+                  <Button className="h-11 gradient-primary border-0" onClick={() => { setStep("done"); toast.success("Payment confirmed", { description: KES(total) }); }}>Complete sale</Button>
+                </div>
+              </div>
+            )}
+
+            {step === "done" && (
               <div className="text-center py-4">
                 <div className="h-16 w-16 rounded-full bg-success/15 grid place-items-center mx-auto mb-3">
                   <CheckCircle2 className="h-8 w-8 text-success" />
                 </div>
                 <h3 className="text-xl font-bold">Payment received</h3>
-                <p className="text-sm text-muted-foreground mt-1">{KES(total)} via M-Pesa</p>
-                <Button className="w-full mt-5" onClick={() => { setPaying(null); setCart([]); }}>Print receipt & close</Button>
-              </div>
-            ) : (
-              <div className="text-center py-2">
-                <div className="h-14 w-14 rounded-2xl gradient-primary grid place-items-center mx-auto mb-3">
-                  {paying === "mpesa" ? <Smartphone className="h-6 w-6 text-primary-foreground" /> : <Banknote className="h-6 w-6 text-primary-foreground" />}
-                </div>
-                <h3 className="text-xl font-bold capitalize">{paying} payment</h3>
-                <p className="text-sm text-muted-foreground mt-1">Amount due</p>
-                <div className="text-3xl font-bold mt-2">{KES(total)}</div>
-                {paying === "mpesa" && (
-                  <p className="text-xs text-muted-foreground mt-3">STK push sent to customer phone. Waiting for confirmation...</p>
-                )}
-                <Button className="w-full mt-5 h-11" onClick={() => setPaying("done")}>Confirm payment</Button>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {KES(total)} · {method === "cash" ? "Cash" : method === "split" ? `${KES(mpesaPart)} M-Pesa + ${KES(total - mpesaPart)} cash` : `M-Pesa · ${selectedTill.number}`}
+                </p>
+                <Button className="w-full mt-5 h-11" onClick={() => { closePay(); setCart([]); }}>Print receipt & close</Button>
               </div>
             )}
           </Card>
