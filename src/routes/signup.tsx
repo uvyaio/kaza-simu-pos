@@ -31,7 +31,7 @@ function Signup() {
       if (error) throw error;
       await qc.invalidateQueries({ queryKey: ["me"] });
       toast.success("Restaurant created 🎉");
-      navigate({ to: "/owner" });
+      navigate({ to: "/dashboard" });
     } catch (err: any) {
       toast.error(err?.message ?? "Signup failed");
     } finally {
