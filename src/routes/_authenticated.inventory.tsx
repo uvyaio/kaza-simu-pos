@@ -59,7 +59,21 @@ function Inventory() {
               {lowIngredients.length > 4 && ` +${lowIngredients.length - 4} more`}. Estimated cost: <b>{KES(shoppingListCost)}</b>.
             </p>
           </div>
-          <Button size="sm" variant="outline" className="shrink-0">Send to WhatsApp</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 bg-emerald-600/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 hover:bg-emerald-600/20"
+            onClick={() => {
+              const dateStr = new Date().toLocaleDateString("en-KE", { weekday: "short", day: "numeric", month: "short" });
+              const listItems = lowIngredients
+                .map((ing) => `• ${ing.name}: restock ${Math.max(ing.reorder * 2 - ing.stock, 1)} ${ing.unit} (Supplier: ${ing.supplier || "Market"})`)
+                .join("%0A");
+              const message = `🛒 *Kato's Kitchen Market Shopping List (${dateStr})*%0A%0A*Items to Restock:*%0A${listItems}%0A%0A*Estimated Total:* ${KES(shoppingListCost)}%0A%0ASent via KaliPOS Smart Retail 🇰🇪`;
+              window.open(`https://wa.me/?text=${message}`, "_blank");
+            }}
+          >
+            Send to WhatsApp
+          </Button>
         </div>
       </Card>
 

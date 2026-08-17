@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { products as seedProducts, KES, DAYS, type Product, type Day } from "@/lib/mock-data";
-import { Search, ScanLine, Plus, Minus, Trash2, Smartphone, Banknote, Split, CheckCircle2, X, PlusCircle } from "lucide-react";
+import { Search, ScanLine, Plus, Minus, Trash2, Smartphone, Banknote, Split, CheckCircle2, X, PlusCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { triggerMpesaStkPush } from "@/lib/mpesa-stkpush";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pos")({
@@ -28,9 +29,10 @@ const STEPS = [
 ] as const;
 
 const TILLS = [
-  { id: "till-main", name: "Kato's Kitchen — Main", type: "Till (Buy Goods)", number: "174379" },
-  { id: "paybill", name: "Kato's Kitchen — Paybill", type: "Paybill", number: "400200 · KATO01" },
-  { id: "till-delivery", name: "Deliveries & Riders", type: "Till (Buy Goods)", number: "988021" },
+  { id: "till-main", name: "Kato's Kitchen — Main Till", type: "Till (Buy Goods)", category: "till", number: "174379" },
+  { id: "paybill", name: "Kato's Kitchen — Paybill", type: "Paybill", category: "paybill", number: "400200 · KATO01" },
+  { id: "send-money", name: "Owner Direct M-Pesa", type: "Send Money (P2P)", category: "send_money", number: "0712 345 678 · Kato Joseph" },
+  { id: "till-delivery", name: "Deliveries & Riders Till", type: "Till (Buy Goods)", category: "till", number: "988021" },
 ] as const;
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -61,6 +63,7 @@ function POS() {
   const [activeDay, setActiveDay] = useState<Day>(todayDay());
   const [scanOpen, setScanOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [isProcessingPay, setIsProcessingPay] = useState(false);
 
   const handleScanned = (code: string) => {
     setScanOpen(false);
@@ -382,8 +385,40 @@ function POS() {
                   <p className="text-xs text-muted-foreground mt-3">An STK push will be sent to {phone || "the customer"} for {KES(mpesaPart)}.</p>
                 )}
                 <div className="grid grid-cols-2 gap-2 mt-5">
-                  <Button variant="outline" className="h-11" onClick={() => setStep("details")}>Back</Button>
-                  <Button className="h-11 gradient-primary border-0" onClick={() => { setStep("done"); toast.success("Payment confirmed", { description: KES(total) }); }}>Complete sale</Button>
+                  <Button variant="outline" className="h-11" disabled={isProcessingPay} onClick={() => setStep("details")}>Back</Button>
+                  <Button
+                    className="h-11 gradient-primary border-0"
+                    disabled={isProcessingPay}
+                    onClick={async () => {
+                      setIsProcessingPay(true);
+                      if (method !== "cash" && phone) {
+                        const res = await triggerMpesaStkPush({
+                          phoneNumber: phone,
+                          amount: mpesaPart,
+                          tillOrPaybill: selectedTill.number,
+                        });
+                        if (res.success) {
+                          toast.success("M-Pesa STK Prompt Dispatched 📱", {
+                            description: res.customerMessage,
+                          });
+                        } else {
+                          toast.error("M-Pesa Push Failed", { description: res.error });
+                        }
+                      } else {
+                        toast.success("Payment confirmed", { description: `${KES(total)} Cash received` });
+                      }
+                      setIsProcessingPay(false);
+                      setStep("done");
+                    }}
+                  >
+                    {isProcessingPay ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing...
+                      </>
+                    ) : (
+                      "Complete sale"
+                    )}
+                  </Button>
                 </div>
               </div>
             )}
