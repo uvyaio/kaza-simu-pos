@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Smartphone, Store, Bell, Globe, Shield, Plus, Trash2, CheckCircle2, Star, Send, Building2, CreditCard, Radio } from "lucide-react";
+import { Smartphone, Store, Bell, Globe, Shield, Plus, Trash2, Star, Send, Building2, Radio } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -31,78 +31,75 @@ export type MpesaChannel = {
   active: boolean;
 };
 
+const TYPE_META: Record<MpesaChannelType, {
+  label: string;
+  numberLabel: string;
+  numberPlaceholder: string;
+  namePlaceholder: string;
+  icon: typeof Radio;
+  iconCls: string;
+  badgeCls: string;
+  pillCls: string;
+}> = {
+  till: {
+    label: "Till (Buy Goods)",
+    numberLabel: "Till Number",
+    numberPlaceholder: "e.g. 174379",
+    namePlaceholder: "e.g. Kato Kitchen Main Till",
+    icon: Radio,
+    iconCls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    badgeCls: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20",
+    pillCls: "bg-emerald-600 text-white",
+  },
+  paybill: {
+    label: "Paybill",
+    numberLabel: "Paybill Number",
+    numberPlaceholder: "e.g. 400200",
+    namePlaceholder: "e.g. Kato Business Paybill",
+    icon: Building2,
+    iconCls: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+    badgeCls: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20",
+    pillCls: "bg-blue-600 text-white",
+  },
+  send_money: {
+    label: "Send Money (P2P)",
+    numberLabel: "M-Pesa Phone Number",
+    numberPlaceholder: "e.g. 0712 345 678",
+    namePlaceholder: "e.g. Owner Phone (Send Money)",
+    icon: Send,
+    iconCls: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
+    badgeCls: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20",
+    pillCls: "bg-purple-600 text-white",
+  },
+};
+
 const initialChannels: MpesaChannel[] = [
-  {
-    id: "ch-1",
-    type: "till",
-    name: "Kato's Kitchen — Main Till",
-    number: "174379",
-    isDefault: true,
-    active: true,
-  },
-  {
-    id: "ch-2",
-    type: "paybill",
-    name: "Kato's Kitchen — Main Paybill",
-    number: "400200",
-    accountRef: "KATO01",
-    isDefault: false,
-    active: true,
-  },
-  {
-    id: "ch-3",
-    type: "send_money",
-    name: "Owner Direct M-Pesa (Send Money)",
-    number: "0712 345 678",
-    recipientName: "Kato Joseph",
-    isDefault: false,
-    active: true,
-  },
-  {
-    id: "ch-4",
-    type: "till",
-    name: "Delivery & Rider Till",
-    number: "988021",
-    isDefault: false,
-    active: true,
-  },
+  { id: "ch-1", type: "till", name: "Kato's Kitchen — Main Till", number: "174379", isDefault: true, active: true },
+  { id: "ch-2", type: "paybill", name: "Kato's Kitchen — Main Paybill", number: "400200", accountRef: "KATO01", isDefault: false, active: true },
+  { id: "ch-3", type: "send_money", name: "Owner Direct M-Pesa (Send Money)", number: "0712 345 678", recipientName: "Kato Joseph", isDefault: false, active: true },
+  { id: "ch-4", type: "till", name: "Delivery & Rider Till", number: "988021", isDefault: false, active: true },
 ];
+
+const emptyForm = { type: "till" as MpesaChannelType, name: "", number: "", accountRef: "", recipientName: "", isDefault: false };
 
 function Settings() {
   const [channels, setChannels] = useState<MpesaChannel[]>(initialChannels);
   const [activeTab, setActiveTab] = useState<"all" | MpesaChannelType>("all");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const set = <K extends keyof typeof emptyForm>(k: K, v: (typeof emptyForm)[K]) => setForm(f => ({ ...f, [k]: v }));
 
-  // New channel form state
-  const [newType, setNewType] = useState<MpesaChannelType>("till");
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-  const [newAccountRef, setNewAccountRef] = useState("");
-  const [newRecipientName, setNewRecipientName] = useState("");
-  const [newIsDefault, setNewIsDefault] = useState(false);
-
-  const filteredChannels = channels.filter(
-    (c) => activeTab === "all" || c.type === activeTab
-  );
+  const filteredChannels = channels.filter((c) => activeTab === "all" || c.type === activeTab);
 
   const handleSetDefault = (id: string) => {
-    setChannels((prev) =>
-      prev.map((c) => ({
-        ...c,
-        isDefault: c.id === id,
-      }))
-    );
-    const target = channels.find((c) => c.id === id);
+    setChannels((prev) => prev.map((c) => ({ ...c, isDefault: c.id === id })));
     toast.success("Default channel updated", {
-      description: `${target?.name} set as primary POS payment destination.`,
+      description: `${channels.find((c) => c.id === id)?.name} set as primary POS payment destination.`,
     });
   };
 
-  const handleToggleActive = (id: string) => {
-    setChannels((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, active: !c.active } : c))
-    );
-  };
+  const handleToggleActive = (id: string) =>
+    setChannels((prev) => prev.map((c) => (c.id === id ? { ...c, active: !c.active } : c)));
 
   const handleDeleteChannel = (id: string) => {
     const target = channels.find((c) => c.id === id);
@@ -117,42 +114,29 @@ function Settings() {
   };
 
   const handleAddChannel = () => {
-    if (!newName.trim() || !newNumber.trim()) {
+    if (!form.name.trim() || !form.number.trim()) {
       toast.error("Validation error", {
         description: "Please provide both a label name and a Till/Paybill/Phone number.",
       });
       return;
     }
-
-    const newId = `ch-${Date.now()}`;
     const newChan: MpesaChannel = {
-      id: newId,
-      type: newType,
-      name: newName.trim(),
-      number: newNumber.trim(),
-      accountRef: newType === "paybill" ? newAccountRef.trim() : undefined,
-      recipientName: newType === "send_money" ? newRecipientName.trim() : undefined,
-      isDefault: newIsDefault,
+      id: `ch-${Date.now()}`,
+      type: form.type,
+      name: form.name.trim(),
+      number: form.number.trim(),
+      accountRef: form.type === "paybill" ? form.accountRef.trim() : undefined,
+      recipientName: form.type === "send_money" ? form.recipientName.trim() : undefined,
+      isDefault: form.isDefault,
       active: true,
     };
-
-    setChannels((prev) => {
-      let list = newIsDefault ? prev.map((c) => ({ ...c, isDefault: false })) : [...prev];
-      return [...list, newChan];
-    });
-
-    toast.success("M-Pesa Destination Added 📱", {
-      description: `Added ${newName} (${newType === "till" ? "Till Number" : newType === "paybill" ? "Paybill" : "Send Money"})`,
-    });
-
-    // Reset form
-    setNewName("");
-    setNewNumber("");
-    setNewAccountRef("");
-    setNewRecipientName("");
-    setNewIsDefault(false);
+    setChannels((prev) => [...(form.isDefault ? prev.map((c) => ({ ...c, isDefault: false })) : prev), newChan]);
+    toast.success("M-Pesa Destination Added 📱", { description: `Added ${form.name} (${TYPE_META[form.type].label})` });
+    setForm(emptyForm);
     setAddDialogOpen(false);
   };
+
+  const meta = TYPE_META[form.type];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-3xl mx-auto">
@@ -210,88 +194,47 @@ function Settings() {
               <div className="space-y-4 py-2">
                 <div className="space-y-1.5">
                   <Label>Channel Type</Label>
-                  <Select value={newType} onValueChange={(v: MpesaChannelType) => setNewType(v)}>
+                  <Select value={form.type} onValueChange={(v: MpesaChannelType) => set("type", v)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="till">
-                        <div className="flex items-center gap-2">
-                          <Radio className="h-4 w-4 text-emerald-600" />
-                          <span>Till Number (Buy Goods & Services)</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="paybill">
-                        <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-blue-600" />
-                          <span>Paybill (Business Paybill)</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="send_money">
-                        <div className="flex items-center gap-2">
-                          <Send className="h-4 w-4 text-purple-600" />
-                          <span>Send Money (Personal Phone Number)</span>
-                        </div>
-                      </SelectItem>
+                      {(Object.keys(TYPE_META) as MpesaChannelType[]).map((t) => {
+                        const m = TYPE_META[t];
+                        return (
+                          <SelectItem key={t} value={t}>
+                            <div className="flex items-center gap-2">
+                              <m.icon className="h-4 w-4" />
+                              <span>{m.label}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-1.5">
                   <Label>Channel Label Name</Label>
-                  <Input
-                    placeholder={
-                      newType === "till"
-                        ? "e.g. Kato Kitchen Main Till"
-                        : newType === "paybill"
-                        ? "e.g. Kato Business Paybill"
-                        : "e.g. Owner Phone (Send Money)"
-                    }
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                  />
+                  <Input placeholder={meta.namePlaceholder} value={form.name} onChange={(e) => set("name", e.target.value)} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>
-                    {newType === "till"
-                      ? "Till Number"
-                      : newType === "paybill"
-                      ? "Paybill Number"
-                      : "M-Pesa Phone Number"}
-                  </Label>
-                  <Input
-                    placeholder={
-                      newType === "till"
-                        ? "e.g. 174379"
-                        : newType === "paybill"
-                        ? "e.g. 400200"
-                        : "e.g. 0712 345 678"
-                    }
-                    value={newNumber}
-                    onChange={(e) => setNewNumber(e.target.value)}
-                  />
+                  <Label>{meta.numberLabel}</Label>
+                  <Input placeholder={meta.numberPlaceholder} value={form.number} onChange={(e) => set("number", e.target.value)} />
                 </div>
 
-                {newType === "paybill" && (
+                {form.type === "paybill" && (
                   <div className="space-y-1.5">
                     <Label>Account Reference / Number</Label>
-                    <Input
-                      placeholder="e.g. KATO01 or SHOP"
-                      value={newAccountRef}
-                      onChange={(e) => setNewAccountRef(e.target.value)}
-                    />
+                    <Input placeholder="e.g. KATO01 or SHOP" value={form.accountRef} onChange={(e) => set("accountRef", e.target.value)} />
                   </div>
                 )}
 
-                {newType === "send_money" && (
+                {form.type === "send_money" && (
                   <div className="space-y-1.5">
                     <Label>Recipient Name (for customer verification)</Label>
-                    <Input
-                      placeholder="e.g. Kato Joseph"
-                      value={newRecipientName}
-                      onChange={(e) => setNewRecipientName(e.target.value)}
-                    />
+                    <Input placeholder="e.g. Kato Joseph" value={form.recipientName} onChange={(e) => set("recipientName", e.target.value)} />
                   </div>
                 )}
 
@@ -299,8 +242,8 @@ function Settings() {
                   <input
                     type="checkbox"
                     id="isDefaultCheck"
-                    checked={newIsDefault}
-                    onChange={(e) => setNewIsDefault(e.target.checked)}
+                    checked={form.isDefault}
+                    onChange={(e) => set("isDefault", e.target.checked)}
                     className="h-4 w-4 rounded border-gray-300 text-mpesa focus:ring-mpesa"
                   />
                   <Label htmlFor="isDefaultCheck" className="text-xs font-normal cursor-pointer">
@@ -324,153 +267,75 @@ function Settings() {
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             onClick={() => setActiveTab("all")}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium transition-colors",
-              activeTab === "all" ? "bg-mpesa text-white" : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            )}
+            className={cn("px-3 py-1 rounded-full text-xs font-medium transition-colors",
+              activeTab === "all" ? "bg-mpesa text-white" : "bg-muted hover:bg-muted/80 text-muted-foreground")}
           >
             All Channels ({channels.length})
           </button>
-          <button
-            onClick={() => setActiveTab("till")}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium transition-colors",
-              activeTab === "till" ? "bg-emerald-600 text-white" : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            )}
-          >
-            Till Numbers ({channels.filter((c) => c.type === "till").length})
-          </button>
-          <button
-            onClick={() => setActiveTab("paybill")}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium transition-colors",
-              activeTab === "paybill" ? "bg-blue-600 text-white" : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            )}
-          >
-            Paybill ({channels.filter((c) => c.type === "paybill").length})
-          </button>
-          <button
-            onClick={() => setActiveTab("send_money")}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium transition-colors",
-              activeTab === "send_money" ? "bg-purple-600 text-white" : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            )}
-          >
-            Send Money ({channels.filter((c) => c.type === "send_money").length})
-          </button>
+          {(Object.keys(TYPE_META) as MpesaChannelType[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className={cn("px-3 py-1 rounded-full text-xs font-medium transition-colors",
+                activeTab === t ? TYPE_META[t].pillCls : "bg-muted hover:bg-muted/80 text-muted-foreground")}
+            >
+              {TYPE_META[t].label} ({channels.filter((c) => c.type === t).length})
+            </button>
+          ))}
         </div>
 
         {/* Channels List */}
         <div className="space-y-2.5">
-          {filteredChannels.map((c) => (
-            <div
-              key={c.id}
-              className={cn(
-                "flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border transition-all",
-                c.isDefault
-                  ? "border-mpesa/60 bg-mpesa/5 dark:bg-mpesa/10"
-                  : "bg-card hover:border-border/80"
-              )}
-            >
-              <div className="flex items-start gap-3 min-w-0">
-                <div
-                  className={cn(
-                    "h-9 w-9 rounded-lg grid place-items-center shrink-0 mt-0.5",
-                    c.type === "till"
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                      : c.type === "paybill"
-                      ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
-                      : "bg-purple-500/15 text-purple-600 dark:text-purple-400"
-                  )}
-                >
-                  {c.type === "till" ? (
-                    <Radio className="h-4 w-4" />
-                  ) : c.type === "paybill" ? (
-                    <Building2 className="h-4 w-4" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </div>
+          {filteredChannels.map((c) => {
+            const m = TYPE_META[c.type];
+            return (
+              <div
+                key={c.id}
+                className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border transition-all",
+                  c.isDefault ? "border-mpesa/60 bg-mpesa/5 dark:bg-mpesa/10" : "bg-card hover:border-border/80")}
+              >
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className={cn("h-9 w-9 rounded-lg grid place-items-center shrink-0 mt-0.5", m.iconCls)}>
+                    <m.icon className="h-4 w-4" />
+                  </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm">{c.name}</span>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px] py-0 px-2 uppercase tracking-wide font-semibold",
-                        c.type === "till"
-                          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20"
-                          : c.type === "paybill"
-                          ? "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20"
-                          : "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20"
-                      )}
-                    >
-                      {c.type === "till"
-                        ? "Till (Buy Goods)"
-                        : c.type === "paybill"
-                        ? "Paybill"
-                        : "Send Money (P2P)"}
-                    </Badge>
-
-                    {c.isDefault && (
-                      <Badge className="bg-mpesa text-white text-[10px] py-0 px-2 gap-1 border-0">
-                        <Star className="h-3 w-3 fill-white" /> Primary POS Default
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-sm">{c.name}</span>
+                      <Badge variant="outline" className={cn("text-[10px] py-0 px-2 uppercase tracking-wide font-semibold", m.badgeCls)}>
+                        {m.label}
                       </Badge>
-                    )}
-                  </div>
+                      {c.isDefault && (
+                        <Badge className="bg-mpesa text-white text-[10px] py-0 px-2 gap-1 border-0">
+                          <Star className="h-3 w-3 fill-white" /> Primary POS Default
+                        </Badge>
+                      )}
+                    </div>
 
-                  <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span>
-                      <strong>
-                        {c.type === "till" ? "Till #" : c.type === "paybill" ? "Paybill #" : "Phone #"}
-                      </strong>{" "}
-                      {c.number}
-                    </span>
-                    {c.accountRef && (
-                      <span>
-                        <strong>Acc Ref:</strong> {c.accountRef}
-                      </span>
-                    )}
-                    {c.recipientName && (
-                      <span>
-                        <strong>Recipient:</strong> {c.recipientName}
-                      </span>
-                    )}
+                    <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span><strong>{m.numberLabel.replace(" Number", " #").replace("M-Pesa Phone Number", "Phone #")}:</strong> {c.number}</span>
+                      {c.accountRef && <span><strong>Acc Ref:</strong> {c.accountRef}</span>}
+                      {c.recipientName && <span><strong>Recipient:</strong> {c.recipientName}</span>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                  {!c.isDefault && (
+                    <Button size="sm" variant="ghost" className="h-8 text-xs text-muted-foreground hover:text-foreground" onClick={() => handleSetDefault(c.id)}>
+                      <Star className="h-3.5 w-3.5 mr-1" /> Make Default
+                    </Button>
+                  )}
+                  <div className="flex items-center gap-1.5 border-l pl-2">
+                    <Switch checked={c.active} onCheckedChange={() => handleToggleActive(c.id)} title={c.active ? "Active" : "Inactive"} />
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteChannel(c.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                {!c.isDefault && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 text-xs text-muted-foreground hover:text-foreground"
-                    onClick={() => handleSetDefault(c.id)}
-                  >
-                    <Star className="h-3.5 w-3.5 mr-1" /> Make Default
-                  </Button>
-                )}
-
-                <div className="flex items-center gap-1.5 border-l pl-2">
-                  <Switch
-                    checked={c.active}
-                    onCheckedChange={() => handleToggleActive(c.id)}
-                    title={c.active ? "Active" : "Inactive"}
-                  />
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => handleDeleteChannel(c.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="flex items-center justify-between pt-3 border-t text-xs">
@@ -523,4 +388,3 @@ function Settings() {
     </div>
   );
 }
-
