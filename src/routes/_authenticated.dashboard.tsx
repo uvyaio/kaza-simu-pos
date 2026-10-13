@@ -235,7 +235,7 @@ function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis dataKey="day" stroke="var(--color-muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis stroke="var(--color-muted-foreground)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
-              <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 }} formatter={(v: number) => KES(v)} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => KES(v)} />
               <Area type="monotone" dataKey="sales" stroke="var(--color-primary)" fill="url(#g1)" strokeWidth={2.5} />
               <Area type="monotone" dataKey="profit" stroke="var(--color-success)" fill="url(#g2)" strokeWidth={2.5} />
             </AreaChart>
@@ -375,7 +375,7 @@ function Dashboard() {
               <Pie data={paymentSplit} dataKey="value" innerRadius={45} outerRadius={70} paddingAngle={3}>
                 {paymentSplit.map((e, i) => <Cell key={i} fill={e.color} />)}
               </Pie>
-              <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
             </PieChart>
           </ResponsiveContainer>
           <div className="space-y-1.5 mt-2">
@@ -400,7 +400,7 @@ function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis dataKey="name" stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} interval={0} angle={-15} textAnchor="end" height={60} />
               <YAxis stroke="var(--color-muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Bar dataKey="units" fill="var(--color-primary)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
