@@ -23,6 +23,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
+const TOOLTIP_STYLE = { background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 };
+
+const REPORT_TOP_DISHES = [
+  { name: "1. Nyama Choma (½ kg)", detail: `84 plates served (${KES(71400)})` },
+  { name: "2. Brown Ugali", detail: `132 plates served (${KES(13200)})` },
+  { name: "3. Pilau ya Kuku", detail: `76 plates served (${KES(34200)})` },
+];
+
 function Dashboard() {
   const navigate = useNavigate();
   const [reportOpen, setReportOpen] = useState(false);
@@ -122,18 +130,16 @@ function Dashboard() {
                 <div className="space-y-4 py-2 text-sm">
                   {/* Financial Stats */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-muted/30 p-3.5 rounded-xl border">
-                    <div>
-                      <div className="text-[11px] text-muted-foreground font-medium">Total Sales</div>
-                      <div className="text-lg font-bold text-foreground">{KES(58420)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-muted-foreground font-medium">Net Profit</div>
-                      <div className="text-lg font-bold text-emerald-600">{KES(16780)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-muted-foreground font-medium">Transactions</div>
-                      <div className="text-lg font-bold text-foreground">184 orders</div>
-                    </div>
+                    {[
+                      { label: "Total Sales", value: KES(58420), cls: "text-foreground" },
+                      { label: "Net Profit", value: KES(16780), cls: "text-emerald-600" },
+                      { label: "Transactions", value: "184 orders", cls: "text-foreground" },
+                    ].map((s) => (
+                      <div key={s.label}>
+                        <div className="text-[11px] text-muted-foreground font-medium">{s.label}</div>
+                        <div className={`text-lg font-bold ${s.cls}`}>{s.value}</div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* M-Pesa Reconciliation */}
@@ -150,18 +156,12 @@ function Dashboard() {
                   <div className="space-y-2">
                     <div className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Top Performing Dishes</div>
                     <div className="space-y-1.5">
-                      <div className="flex justify-between items-center text-xs p-2 rounded-lg bg-card border">
-                        <span className="font-medium">1. Nyama Choma (½ kg)</span>
-                        <span className="font-bold">84 plates served ({KES(71400)})</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs p-2 rounded-lg bg-card border">
-                        <span className="font-medium">2. Brown Ugali</span>
-                        <span className="font-bold">132 plates served ({KES(13200)})</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs p-2 rounded-lg bg-card border">
-                        <span className="font-medium">3. Pilau ya Kuku</span>
-                        <span className="font-bold">76 plates served ({KES(34200)})</span>
-                      </div>
+                      {REPORT_TOP_DISHES.map((d) => (
+                        <div key={d.name} className="flex justify-between items-center text-xs p-2 rounded-lg bg-card border">
+                          <span className="font-medium">{d.name}</span>
+                          <span className="font-bold">{d.detail}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
